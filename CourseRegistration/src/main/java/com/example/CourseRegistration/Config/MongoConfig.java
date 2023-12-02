@@ -8,7 +8,6 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
 @Configuration
-// @EnableMongoRepositories(basePackages = "your.package.name")
 @EnableMongoRepositories(basePackages  = {"com.example.CourseRegistration.Database"})
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
