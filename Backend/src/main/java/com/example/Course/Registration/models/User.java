@@ -1,24 +1,43 @@
-package com.example.CourseRegistration.Collections;
+package com.example.Course.Registration.models;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import jakarta.validation.constraints.NotBlank;
+
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-    
 @Document(collection = "Users")
-public class Users {
+public class User {
+
+    @Id
+    private String id;
+
+    @NotBlank
+    private String username;
+    @NotBlank
     private String name;
+    @NotBlank
     private String email;
+    @NotBlank
     private String password;
+    @NotBlank
     private String branch;
     private String degree;
-    private String role;
 
-    public Users(String name, String email, String password, String branch, String degree, String role) {
+    @DBRef
+    private Set<Role> roles = new HashSet<>();
+
+    public User(String name, String email, String password, String branch, String degree) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.branch = branch;
         this.degree = degree;
-        this.role = role;
+        this.username = email;
+        // this.role = role;
     }
 
     public void setName(String name) {
@@ -37,8 +56,8 @@ public class Users {
         this.email = email;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setRole(Set<Role> role) {
+        this.roles = role;
     }
 
     public void setPassword(String password) { this.password = password; }
@@ -59,10 +78,27 @@ public class Users {
         return email;
     }
 
-    public String getRole() {
-        return role;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     public String getPassword() { return password; }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getUsername(){ return username; }
+
+    public void setUsername(String username){ this.username = username; }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+    
     
 }
