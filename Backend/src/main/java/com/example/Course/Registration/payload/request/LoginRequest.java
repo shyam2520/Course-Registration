@@ -21,6 +21,10 @@ public class LoginRequest {
 		return password;
 	}
 
+	public String getUsername() {
+		return email;
+	}
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
