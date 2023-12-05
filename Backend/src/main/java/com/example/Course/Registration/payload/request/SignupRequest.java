@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 public class SignupRequest {
     // @NotBlank
     // @Size(min = 3, max = 20)
-    private String username;
+    // private String username;
  
     @NotBlank
     @Size(max = 50)
@@ -29,13 +29,13 @@ public class SignupRequest {
     @Size(min = 6, max = 40)
     private String password;
   
-    public String getUsername() {
-        return username;
-    }
+    // public String getUsername() {
+    //     return username;
+    // }
  
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    // public void setUsername(String username) {
+    //     this.username = username;
+    // }
  
     public String getEmail() {
         return email;

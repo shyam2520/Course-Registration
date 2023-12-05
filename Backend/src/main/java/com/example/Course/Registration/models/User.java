@@ -15,8 +15,8 @@ public class User {
     @Id
     private String id;
 
-    @NotBlank
-    private String username;
+    // @NotBlank
+    // private String username;
     @NotBlank
     private String name;
     @NotBlank
@@ -36,8 +36,8 @@ public class User {
         this.password = password;
         this.branch = branch;
         this.degree = degree;
-        this.username = email;
-        // this.role = role;
+        // this.username = email;
+        // this.roles = role;
     }
 
     public void setName(String name) {
@@ -92,9 +92,9 @@ public class User {
         this.id = id;
     }
 
-    public String getUsername(){ return username; }
+    // public String getUsername(){ return username; }
 
-    public void setUsername(String username){ this.username = username; }
+    // public void setUsername(String username){ this.username = username; }
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
