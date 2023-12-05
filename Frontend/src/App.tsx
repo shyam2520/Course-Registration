@@ -1,12 +1,12 @@
 
 import './App.css'
-import { Button } from '@/components/ui/button.tsx'
+import Login from './components/Login'
 
 function App() {
 
   return (
     <>
-      <Button>Course Registartion</Button>
+      <Login />
     </>
   )
 }
