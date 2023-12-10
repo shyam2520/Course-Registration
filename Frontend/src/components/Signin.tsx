@@ -3,28 +3,43 @@ import { useForm } from "react-hook-form"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
-import { LoginForm, LoginFormType } from "@/lib/validators/login";
+import { SigninForm, SigninFormType } from "@/lib/validators/signin";
+import axios from "axios";
+import { useMutation } from "react-query";
 
 
-export default function Login() {
+export default function Signin() {
 
-  const form = useForm<LoginFormType>({
-    resolver: zodResolver(LoginForm),
+  const form = useForm<SigninFormType>({
+    resolver: zodResolver(SigninForm),
     defaultValues: {
       email: "",
       password: "",
     },
   });
 
-  const onSubmit = (data: LoginFormType) => {
-    console.log(data);
-  }
+  const {mutate: signIn, isLoading } = useMutation({
+    mutationFn: async ({email, password}: SigninFormType) => {
+      const payload = {
+        email,
+        password,
+      };
+      const { data } = await axios.post(import.meta.env.VITE_SPRING_URL + "/api/auth/signin", payload);
+      return data;
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    onSuccess: (data) => {
+      console.log(data);
+    }
+  });
 
   return (
     <div className="flex flex-col max-w-3xl mx-auto h-screen justify-center items-center">
-      <h1 className="text-2xl font-semibold">Login</h1>
+      <h1 className="text-2xl font-semibold">Sign In</h1>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="w-64 space-y-8">
+        <form onSubmit={form.handleSubmit((e) => signIn(e))} className="sm:w-96 w-64 space-y-6">
           <FormField
             control={form.control}
             name="email"
@@ -39,19 +54,20 @@ export default function Login() {
             )}
           />
           <FormField
+          
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" {...field} />
+                  <Input type="password" placeholder="password" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
-          <Button type="submit">Submit</Button>
+          <Button type="submit" disabled={isLoading}>Sign In</Button>
         </form>
       </Form>
     </div>

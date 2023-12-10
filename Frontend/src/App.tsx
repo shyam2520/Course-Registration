@@ -1,13 +1,19 @@
 
+import { QueryClient, QueryClientProvider } from 'react-query'
 import './App.css'
-import Login from './components/Login'
+import Signin from './components/Signin'
+import Signup from './components/Signup'
+
 
 function App() {
 
+  const queryClient = new QueryClient();
+
   return (
-    <>
-      <Login />
-    </>
+    <QueryClientProvider client={queryClient}>
+      <Signin />
+      <Signup />
+    </QueryClientProvider>
   )
 }
 
