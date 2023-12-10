@@ -14,7 +14,5 @@ public interface CourseRepository extends MongoRepository<Courses, String> {
     List<Courses> findByPrerequisite(String prerequisite);
     List<Courses> findByInstructor(String instructor);
     // List<Courses> findBySeats(Integer seats);
-    // @Modifying
-    
 
 }
