@@ -86,7 +86,6 @@ public class CourseController {
             case "prerequisite":
                 return ResponseEntity.ok().body(courseService.getCourseByPrerequisite(value));
             case "instructor":
-                // return ResponseEntity.ok().body(courseService.getCourseByInstructor(value));
                 List<Courses> insCourses =  courseService.getCourseByInstructor(value);
                 Collections.sort(insCourses, (a, b) -> a.getInstructor().compareTo(b.getInstructor()));
                 return ResponseEntity.ok().body(insCourses);
