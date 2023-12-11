@@ -1,8 +1,8 @@
 
-import { QueryClient, QueryClientProvider } from 'react-query'
-import './App.css'
-import Signin from './components/Signin'
-import Signup from './components/Signup'
+import { QueryClient, QueryClientProvider } from 'react-query';
+import './App.css';
+import AuthProvider from './providers/AuthProvider';
+import { Route } from './providers/Route';
 
 
 function App() {
@@ -11,8 +11,9 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Signin />
-      <Signup />
+      <AuthProvider>
+        <Route />
+      </AuthProvider>
     </QueryClientProvider>
   )
 }
