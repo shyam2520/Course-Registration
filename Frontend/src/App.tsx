@@ -1,13 +1,20 @@
 
-import './App.css'
-import { Button } from '@/components/ui/button.tsx'
+import { QueryClient, QueryClientProvider } from 'react-query';
+import './App.css';
+import AuthProvider from './providers/AuthProvider';
+import { Route } from './providers/Route';
+
 
 function App() {
 
+  const queryClient = new QueryClient();
+
   return (
-    <>
-      <Button>Course Registartion</Button>
-    </>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <Route />
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
 
