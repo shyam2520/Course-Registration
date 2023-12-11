@@ -19,7 +19,6 @@ import java.util.List;
 
 import com.example.Course.Registration.Services.CourseService;
 import com.example.Course.Registration.models.Courses;
-import com.example.Course.Registration.payload.response.CourseResponse;
 import com.example.Course.Registration.payload.response.MessageResponse;
 
 @RestController
