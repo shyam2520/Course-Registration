@@ -19,7 +19,7 @@ function App() {
   let isUserAnAdmin = false;
   if (token) {
     const userDetails = getUser();
-    isUserAnAdmin = userDetails.role === Role.USER;
+    isUserAnAdmin = userDetails.role === Role.ADMIN;
   }
 
   return (
