@@ -114,7 +114,7 @@ public class CourseController {
         return ResponseEntity.badRequest().body(new MessageResponse("Error: Invalid filter"));
     }
 
-    @PostMapping("/registerCourse")
+    @PostMapping("/register")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<?> registerCourse(@Valid @RequestBody CourseRequest registerCourseRequest) {
         if(email == null){
@@ -152,7 +152,7 @@ public class CourseController {
         return ResponseEntity.ok().body(new MessageResponse("Course registered successfully"));
     }
 
-    @PostMapping("/dropCourse")
+    @PostMapping("/drop")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<?> dropCourse(@Valid @RequestBody CourseRequest dropCourseRequest) {
         if(email == null){
