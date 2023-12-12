@@ -12,15 +12,17 @@ public class Courses {
     private Integer CRN;
     private String semester;
     private Integer hours;
-    private String enrollment;
+    private Integer enrollment;
     private Set<String> prerequisite; 
     private String instructor;
     private Integer seats;
+    private ClassTiming classTiming;
+
     // private String startTime;
     // private String endTime;
     // private String classDay;
 
-    public Courses(String title, Integer CRN, String semester, Integer hours, String enrollment, Set<String> prerequisite, String instructor, Integer seats) {
+    public Courses(String title, Integer CRN, String semester, Integer hours, Integer enrollment, Set<String> prerequisite, String instructor, Integer seats, ClassTiming classTiming) {
         this.title = title;
         this.CRN = CRN;
         this.semester = semester;
@@ -29,6 +31,7 @@ public class Courses {
         this.prerequisite = prerequisite;
         this.instructor = instructor;
         this.seats = seats;
+        this.classTiming = classTiming;
     }
 
     public void setTitle(String title) {
@@ -39,73 +42,71 @@ public class Courses {
         this.CRN = CRN;
     }
 
-    // public void setstartTime(String startTime) {
-    //     this.startTime = startTime;
-    // }
 
-    // public void setendTime(String endTime) {
-    //     this.endTime = endTime;
-    // }
+    public void setClassTiming(ClassTiming classTiming) {
+        this.classTiming = classTiming;
+    }
 
-    // public void setclassDay(String classDay) {
-    //     this.classDay = classDay;
-    // }
-
-
+    
+    
+    
     public void setSemester(String semester) {
         this.semester = semester;
     }
-
+    
     public void setHours(Integer hours) {
         this.hours = hours;
     }
-
-    public void setEnrollment(String enrollment) {
+    
+    public void setEnrollment(Integer enrollment) {
         this.enrollment = enrollment;
     }
-
+    
     public void setPrerequisite(Set<String> prerequisite) {
         this.prerequisite = prerequisite;
     }
-
+    
     public void setInstructor(String instructor) {
         this.instructor = instructor;
     }
-
+    
     public void setSeats(Integer seats) {
         this.seats = seats;
     }
-
+    
     public String getTitle() {
         return title;
     }
-
+    
     public Integer getCRN() {
         return CRN;
     }
-
+    
     public String getSemester() {
         return semester;
     }
-
+    
     public Integer getHours() {
         return hours;
     }
-
-    public String getEnrollment() {
+    
+    public Integer getEnrollment() {
         return enrollment;
     }
-
+    
     public Set<String> getPrerequisite() {
         return prerequisite;
     }
-
+    
     public String getInstructor() {
         return instructor;
     }
-
+    
+    public ClassTiming getClassTiming() {
+        return classTiming;
+    }
     // public String getstartTime() {
-    //     return startTime;
+        //     return startTime;
     // }
 
     // public String getendTime() {
