@@ -1,20 +1,36 @@
 
 import { QueryClient, QueryClientProvider } from 'react-query';
 import './App.css';
-import AuthProvider from './providers/AuthProvider';
-import { Route } from './providers/Route';
+import { ThemeProvider } from './providers/ThemeProvider';
+import { useToken } from './store/AuthStore';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import Signin from './components/Signin';
+import ProtectedRoute from './components/ProtectedRoute';
+import Dashboard from './components/Dashboard';
+import Signup from './components/Signup';
 
 
 function App() {
 
   const queryClient = new QueryClient();
+  const token = useToken();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Route />
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
+      <QueryClientProvider client={queryClient}>
+          <BrowserRouter>
+            <Routes>
+              <Route path={'/signup'} element={<Signup />}/>
+              <Route path={'/signin'} element={<Signin />}/>
+              <Route path={'/'} element={
+                <ProtectedRoute token={token}>
+                  <Dashboard />
+                </ProtectedRoute>
+              }/>
+            </Routes>
+          </BrowserRouter>
+      </QueryClientProvider>
+    </ThemeProvider>
   )
 }
 
