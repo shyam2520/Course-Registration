@@ -28,9 +28,6 @@ import com.example.Course.Registration.payload.response.MessageResponse;
 
 import jakarta.validation.Valid;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-
 @RestController
 @RequestMapping("/api/courses")
 @CrossOrigin(origins = "*")
@@ -82,36 +79,35 @@ public class CourseController {
 
     @GetMapping("/getCourse")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<?> getCourse(@RequestParam String filter, @RequestParam String value) {
+    public ResponseEntity<?> getCourse(@Valid @RequestBody CourseRequest courseRequest) {
         if(email == null){
             setAuthenticatedUserEmail();
             if(email == null){
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: User not logged in"));
             }
         }
-        switch (filter) {
-            case "id":
-                return ResponseEntity.ok().body(courseService.getCourseById(value));
-            case "title":
-                List<Courses> res =  (courseService.getCourseByTitle(value));
-                Collections.sort(res, (a, b) -> a.getTitle().compareTo(b.getTitle()));
-                return ResponseEntity.ok().body(res);
-                case "CRN":
-                return ResponseEntity.ok().body(courseService.getCourseByCRN(Integer.parseInt(value)));
-            case "semester":
-                List<Courses> semCourses =  courseService.getCourseBySemester(value);
-                Collections.sort(semCourses, (a, b) -> a.getSemester().compareTo(b.getSemester()));
-                return ResponseEntity.ok().body(semCourses);
-            case "prerequisite":
-                return ResponseEntity.ok().body(courseService.getCourseByPrerequisite(value));
-            case "instructor":
-                List<Courses> insCourses =  courseService.getCourseByInstructor(value);
-                Collections.sort(insCourses, (a, b) -> a.getInstructor().compareTo(b.getInstructor()));
-                return ResponseEntity.ok().body(insCourses);
-            default:
-                break;
+        if(courseRequest.getCourseCRNS().length == 0){
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: No courses to get"));
         }
-        return ResponseEntity.badRequest().body(new MessageResponse("Error: Invalid filter"));
+
+        List<Courses> courses=null;
+        for(String CRN: courseRequest.getCourseCRNS())
+        {
+            Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
+            if(course == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN +" not found"));
+            }
+            else{
+                if(courses == null){
+                    courses = Collections.singletonList(course);
+                }
+                else{
+                    courses.add(course);
+                }
+            }
+        }
+        return ResponseEntity.ok().body(courses);
+
     }
 
     @PostMapping("/register")
@@ -136,6 +132,7 @@ public class CourseController {
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN+" is full"));
             }
             course.setSeats(course.getSeats()-1);
+            course.setEnrollment(course.getEnrollment()+1);
             courseService.addCourse(course);
 
             User user = userService.findByEmail(email).orElse(null);
@@ -171,6 +168,7 @@ public class CourseController {
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN +" not found"));
             }
             course.setSeats(course.getSeats()+1);
+            course.setEnrollment(course.getEnrollment()-1);
             courseService.addCourse(course);
 
             User user = userService.findByEmail(email).orElse(null);
