@@ -32,7 +32,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
     try {
       String jwt = parseJwt(request);
-      System.out.println("JWT: "+jwtUtils.validateJwtToken(jwt));
       if (jwt != null && jwtUtils.validateJwtToken(jwt) == 0) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -47,18 +46,18 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT token is expired");
         return;
       }
-      else if(jwtUtils.validateJwtToken(jwt)==1){
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
-        return;
-      }
-      else if(jwtUtils.validateJwtToken(jwt)==3){
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT claims string is empty");
-        return;
-      }
-      else if(jwtUtils.validateJwtToken(jwt)==4){
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT token is unsupported");
-        return;
-      }
+      // else if(jwtUtils.validateJwtToken(jwt)==1){
+      //   response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
+      //   return;
+      // }
+      // else if(jwtUtils.validateJwtToken(jwt)==3){
+      //   response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT claims string is empty");
+      //   return;
+      // }
+      // else if(jwtUtils.validateJwtToken(jwt)==4){
+      //   response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT token is unsupported");
+      //   return;
+      // }
     } catch (Exception e) {
       logger.error("Cannot set user authentication: {}", e);
     }
