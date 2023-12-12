@@ -32,6 +32,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
       throws ServletException, IOException {
     try {
       String jwt = parseJwt(request);
+      System.out.println("JWT: " + jwt);
       if (jwt != null && jwtUtils.validateJwtToken(jwt) == 0) {
         String username = jwtUtils.getUserNameFromJwtToken(jwt);
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -40,24 +41,22 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authentication);
       }
-      else if(jwtUtils.validateJwtToken(jwt)==2){
-        response.setStatus(501);
-        // response.sendRedirect("/api/auth/signin");
-        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT token is expired");
-        return;
+      else if(jwt!=null && jwtUtils.validateJwtToken(jwt)==1){
+        response.setHeader("Error Message","Error: Malformed JWT token");
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Error: Malformed JWT token");
       }
-      // else if(jwtUtils.validateJwtToken(jwt)==1){
-      //   response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid JWT token");
-      //   return;
-      // }
-      // else if(jwtUtils.validateJwtToken(jwt)==3){
-      //   response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT claims string is empty");
-      //   return;
-      // }
-      // else if(jwtUtils.validateJwtToken(jwt)==4){
-      //   response.sendError(HttpServletResponse.SC_BAD_REQUEST, "JWT token is unsupported");
-      //   return;
-      // }
+      else if(jwt!=null && jwtUtils.validateJwtToken(jwt)==2){
+        response.setHeader("Error Message","Error: JWT token is expired");
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Error: JWT token is expired");
+      }
+      else if(jwt!=null && jwtUtils.validateJwtToken(jwt)==3){
+        response.setHeader("Error Message","Error: JWT token is unsupported");
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Error: JWT token is unsupported");
+      }
+      else if(jwt!=null && jwtUtils.validateJwtToken(jwt)==4){
+        response.setHeader("Error Message","Error: JWT claims string is empty");
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "Error: JWT claims string is empty");
+      }
     } catch (Exception e) {
       logger.error("Cannot set user authentication: {}", e);
     }

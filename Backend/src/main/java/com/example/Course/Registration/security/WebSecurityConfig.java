@@ -24,10 +24,11 @@ import com.example.Course.Registration.security.services.UserDetailsServiceImpl;
 @Configuration
 //@EnableWebSecurity
 @EnableMethodSecurity
+
 //(securedEnabled = true,
 //jsr250Enabled = true,
 //prePostEnabled = true) // by default
-public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig{ // extends WebSecurityConfigurerAdapter {
   @Autowired
   UserDetailsServiceImpl userDetailsService;
 
@@ -43,7 +44,6 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 //public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
 //  authenticationManagerBuilder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 //}
-
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -92,8 +92,8 @@ public class WebSecurityConfig { // extends WebSecurityConfigurerAdapter {
 
     http.authenticationProvider(authenticationProvider());
 
-    http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
-
+      http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class)
+              .exceptionHandling(handling -> handling.authenticationEntryPoint(unauthorizedHandler));
     return http.build();
   }
 }

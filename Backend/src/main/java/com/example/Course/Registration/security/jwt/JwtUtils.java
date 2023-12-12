@@ -47,7 +47,7 @@ public class JwtUtils {
                .parseClaimsJws(token).getBody().getSubject();
   }
 
-  public Integer validateJwtToken(String authToken) {
+  public Integer validateJwtToken(String authToken)  {
     try {
       Jwts.parserBuilder().setSigningKey(key()).build().parse(authToken);
       return 0;
