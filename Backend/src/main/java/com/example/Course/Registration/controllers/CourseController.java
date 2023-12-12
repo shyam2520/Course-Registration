@@ -130,10 +130,10 @@ public class CourseController {
         {
             Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
             if(course == null){
-                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course"+CRN +"not found"));
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN +" not found"));
             }
             if(course.getSeats() == 0){
-                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course"+CRN+"is full"));
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN+" is full"));
             }
             course.setSeats(course.getSeats()-1);
             courseService.addCourse(course);
@@ -168,7 +168,7 @@ public class CourseController {
         {
             Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
             if(course == null){
-                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course"+CRN +"not found"));
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN +" not found"));
             }
             course.setSeats(course.getSeats()+1);
             courseService.addCourse(course);
