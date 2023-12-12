@@ -35,18 +35,8 @@ public class CourseService {
     }
 
     public List<Courses> getCourseBySemester(String semester){
-        // return courseRepository.findBySemester(semester);
-        List<Courses> res = courseRepository.findBySemester(semester);
-        return res.size()>0?res:null;
+        return Optional.ofNullable(courseRepository.findBySemester(semester)).orElse(null);
     }
-
-    // public Courses getCourseByHours(Integer hours){
-    //     return courseRepository.findByHours(hours).get(0);
-    // }
-
-    // public Courses getCourseByEnrollment(String enrollment){
-    //     return courseRepository.findByEnrollment(enrollment).get(0);
-    // }
 
     public Courses getCourseByPrerequisite(String prerequisite){
         // return courseRepository.findByPrerequisite(prerequisite).get(0).orElse(null);

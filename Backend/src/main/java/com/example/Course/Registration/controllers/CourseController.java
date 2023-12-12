@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/courses")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 public class CourseController {
 
     private String email=null;
@@ -70,12 +70,12 @@ public class CourseController {
         if (email != null) {
             // System.out.println(email);
             User user = userService.findByEmail(email).orElse(null);
-            for(Courses course: user.getCourses()){
-                String startTime = course.getstartTime();
-                String endTime = course.getendTime();
-                System.out.println(Instant.parse(startTime));
-                System.out.println(Instant.parse(endTime));
-            }
+            // for(Courses course: user.getCourses()){
+            //     String startTime = course.getstartTime();
+            //     String endTime = course.getendTime();
+            //     System.out.println(Instant.parse(startTime));
+            //     System.out.println(Instant.parse(endTime));
+            // }
         }
         return courseService.getCourses();
     }

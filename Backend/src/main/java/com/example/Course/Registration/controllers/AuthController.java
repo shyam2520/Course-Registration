@@ -32,7 +32,7 @@ import com.example.Course.Registration.payload.response.MessageResponse;
 import com.example.Course.Registration.repository.RoleRepository;
 import com.example.Course.Registration.repository.UserRepository;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
