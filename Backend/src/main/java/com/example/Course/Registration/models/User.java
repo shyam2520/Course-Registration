@@ -30,12 +30,16 @@ public class User {
     @DBRef
     private Set<Role> roles = new HashSet<>();
 
+    @DBRef
+    private Set<Courses> courses = new HashSet<>();
+
     public User(String name, String email, String password, String branch, String degree) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.branch = branch;
         this.degree = degree;
+        this.courses = new HashSet<>();
         // this.username = email;
         // this.roles = role;
     }
@@ -54,6 +58,10 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setCourses(Set<Courses> courses) {
+        this.courses = courses;
     }
 
     public void setRole(Set<Role> role) {
@@ -90,6 +98,10 @@ public class User {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public Set<Courses> getCourses() {
+        return courses;
     }
 
     // public String getUsername(){ return username; }

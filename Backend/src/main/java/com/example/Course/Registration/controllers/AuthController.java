@@ -68,8 +68,9 @@ public class AuthController {
 		return ResponseEntity.ok(new JwtResponse(jwt, 
 												 userDetails.getId(), 
 												 userDetails.getFullName(), 
-												 userDetails.getEmail(), 
-												 roles));
+												//  userDetails.getEmail(), 
+												 roles,
+												userDetails.getCourses()));
 	}
 
 	@PostMapping("/signup")
@@ -139,4 +140,6 @@ public class AuthController {
 
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
+
+	
 }
