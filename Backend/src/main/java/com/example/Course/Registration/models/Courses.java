@@ -16,6 +16,9 @@ public class Courses {
     private Set<String> prerequisite; 
     private String instructor;
     private Integer seats;
+    private String startTime;
+    private String endTime;
+    private String classDay;
 
     public Courses(String title, Integer CRN, String semester, Integer hours, String enrollment, Set<String> prerequisite, String instructor, Integer seats) {
         this.title = title;
@@ -34,6 +37,18 @@ public class Courses {
 
     public void setCRN(Integer CRN) {
         this.CRN = CRN;
+    }
+
+    public void setstartTime(String startTime) {
+        this.startTime = startTime;
+    }
+
+    public void setendTime(String endTime) {
+        this.endTime = endTime;
+    }
+
+    public void setclassDay(String classDay) {
+        this.classDay = classDay;
     }
 
 
@@ -89,6 +104,18 @@ public class Courses {
         return instructor;
     }
 
+    public String getstartTime() {
+        return startTime;
+    }
+
+    public String getendTime() {
+        return endTime;
+    }
+
+    public String getclassDay() {
+        return classDay;
+    }
+    
     public Integer getSeats() {
         return seats;
     }

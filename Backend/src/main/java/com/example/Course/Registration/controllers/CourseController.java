@@ -14,6 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Collections;
 import java.util.List;
@@ -22,7 +23,13 @@ import com.example.Course.Registration.Services.CourseService;
 import com.example.Course.Registration.Services.UserService;
 import com.example.Course.Registration.models.Courses;
 import com.example.Course.Registration.models.User;
+import com.example.Course.Registration.payload.request.CourseRequest;
 import com.example.Course.Registration.payload.response.MessageResponse;
+
+import jakarta.validation.Valid;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -61,7 +68,14 @@ public class CourseController {
     public List<Courses> getAllCourses() {
         setAuthenticatedUserEmail();
         if (email != null) {
-            System.out.println(email);
+            // System.out.println(email);
+            User user = userService.findByEmail(email).orElse(null);
+            for(Courses course: user.getCourses()){
+                String startTime = course.getstartTime();
+                String endTime = course.getendTime();
+                System.out.println(Instant.parse(startTime));
+                System.out.println(Instant.parse(endTime));
+            }
         }
         return courseService.getCourses();
     }
@@ -100,87 +114,75 @@ public class CourseController {
         return ResponseEntity.badRequest().body(new MessageResponse("Error: Invalid filter"));
     }
 
-    // @PostMapping("/registerCourse")
-    // @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    // public ResponseEntity<?> registerCourse(@RequestParam String id) {
-        // if(email == null){
-        //     setAuthenticatedUserEmail();
-        //     if(email == null){
-        //         return ResponseEntity.badRequest().body(new MessageResponse("Error: User not logged in"));
-        //     }
-        // }
-        // User user = userRepository.findByEmail(email).orElse(null);
-        // if(user == null){
-        //     return ResponseEntity.badRequest().body(new MessageResponse("Error: User not found"));
-        // }
-        // Courses course = courseService.getCourseById(id);
-        // if(course == null){
-        //     return ResponseEntity.badRequest().body(new MessageResponse("Error: Course not found"));
-        // }
-        // if(user.getCourses().contains(course)){
-        //     return ResponseEntity.badRequest().body(new MessageResponse("Error: Course already registered"));
-        // }
-        // user.getCourses().add(course);
-        // userRepository.save(user);
-        // return ResponseEntity.ok().body(new MessageResponse("Course registered successfully"));
-    // }
-
     @PostMapping("/registerCourse")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<?> registerCourse(@RequestParam String CRN) {
+    public ResponseEntity<?> registerCourse(@Valid @RequestBody CourseRequest registerCourseRequest) {
         if(email == null){
             setAuthenticatedUserEmail();
             if(email == null){
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: User not logged in"));
             }
         }
-        Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
-        if(course == null){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Course not found"));
+        if(registerCourseRequest.getCourseCRNS().length == 0){
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: No courses to register"));
         }
-        if(course.getSeats() == 0){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Course is full"));
-        }
-        course.setSeats(course.getSeats()-1);
-        courseService.addCourse(course);
+        for(String CRN: registerCourseRequest.getCourseCRNS())
+        {
+            Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
+            if(course == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course"+CRN +"not found"));
+            }
+            if(course.getSeats() == 0){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course"+CRN+"is full"));
+            }
+            course.setSeats(course.getSeats()-1);
+            courseService.addCourse(course);
 
-        User user = userService.findByEmail(email).orElse(null);
-        if(user == null){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: User not found"));
+            User user = userService.findByEmail(email).orElse(null);
+            if(user == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: User not found"));
+            }
+            // user.getCourses().anyMatch(c -> c.getCRN().equals(Integer.parseInt(CRN)));
+            if(user.getCourses().stream().anyMatch(c -> c.getCRN().equals(Integer.parseInt(CRN)))){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN+" already registered"));
+            }
+            user.getCourses().add(course);
+            userService.save(user);
         }
-        if(user.getCourses().contains(course)){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Course already registered"));
-        }
-        user.getCourses().add(course);
-        userService.save(user);
         return ResponseEntity.ok().body(new MessageResponse("Course registered successfully"));
     }
 
     @PostMapping("/dropCourse")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<?> dropCourse(@RequestParam Integer CRN) {
+    public ResponseEntity<?> dropCourse(@Valid @RequestBody CourseRequest dropCourseRequest) {
         if(email == null){
             setAuthenticatedUserEmail();
             if(email == null){
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: User not logged in"));
             }
         }
-        Courses course = courseService.getCourseByCRN(CRN);
-        if(course == null){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Course not found"));
+        if(dropCourseRequest.getCourseCRNS().length == 0){
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: No courses to drop"));
         }
-        course.setSeats(course.getSeats()+1);
-        courseService.addCourse(course);
+        for(String CRN: dropCourseRequest.getCourseCRNS())
+        {
+            Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
+            if(course == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course"+CRN +"not found"));
+            }
+            course.setSeats(course.getSeats()+1);
+            courseService.addCourse(course);
 
-        User user = userService.findByEmail(email).orElse(null);
-        if(user == null){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: User not found"));
+            User user = userService.findByEmail(email).orElse(null);
+            if(user == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: User not found"));
+            }
+            if(!user.getCourses().stream().anyMatch(c -> c.getCRN().equals(Integer.parseInt(CRN)))){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN+" not registered"));
+            }
+            user.getCourses().removeIf(c -> c.getCRN().equals(Integer.parseInt(CRN)));
+            userService.save(user);
         }
-        if(!user.getCourses().stream().anyMatch(c -> c.getCRN().equals(CRN))){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: Course not registered"));
-        }
-        user.getCourses().removeIf(c -> c.getCRN().equals(CRN));
-        userService.save(user);
         return ResponseEntity.ok().body(new MessageResponse("Course dropped successfully"));
     }
 
