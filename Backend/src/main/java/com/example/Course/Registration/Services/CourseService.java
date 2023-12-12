@@ -3,6 +3,8 @@ package com.example.Course.Registration.Services;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
+import java.util.Optional;
+
 import com.example.Course.Registration.models.Courses;
 import com.example.Course.Registration.repository.CourseRepository;
 // import com.example.Course.Registration.Repositorxy.CourseRepository;
@@ -22,15 +24,20 @@ public class CourseService {
     }
 
     public List<Courses> getCourseByTitle(String title){
-        return courseRepository.findByTitle(title);
+        // return courseRepository.findByTitle(title);
+        List<Courses> res = courseRepository.findByTitle(title);
+        return res.size()>0?res:null;
     }
 
     public Courses getCourseByCRN(Integer CRN){
-        return courseRepository.findByCRN(CRN).get(0);
+        List<Courses> res = courseRepository.findByCRN(CRN);
+        return res.size()>0?res.get(0):null;
     }
 
     public List<Courses> getCourseBySemester(String semester){
-        return courseRepository.findBySemester(semester);
+        // return courseRepository.findBySemester(semester);
+        List<Courses> res = courseRepository.findBySemester(semester);
+        return res.size()>0?res:null;
     }
 
     // public Courses getCourseByHours(Integer hours){
@@ -42,11 +49,15 @@ public class CourseService {
     // }
 
     public Courses getCourseByPrerequisite(String prerequisite){
-        return courseRepository.findByPrerequisite(prerequisite).get(0);
+        // return courseRepository.findByPrerequisite(prerequisite).get(0).orElse(null);
+        List<Courses> res = courseRepository.findByPrerequisite(prerequisite);
+        return res.size()>0?res.get(0):null;
     }
 
     public List<Courses> getCourseByInstructor(String instructor){
-        return courseRepository.findByInstructor(instructor);
+        // return courseRepository.findByInstructor(instructor);
+        List<Courses> res = courseRepository.findByInstructor(instructor);
+        return res.size()>0?res:null;
     }
 
     // public Courses getCourseBySeats(Integer seats){
