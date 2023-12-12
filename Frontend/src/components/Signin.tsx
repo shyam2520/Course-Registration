@@ -6,15 +6,16 @@ import { Button } from "./ui/button";
 import { SigninForm, SigninFormType } from "@/lib/validators/signin";
 import axios from "axios";
 import { useMutation } from "react-query";
-import { useAuth } from "@/providers/AuthProvider";
 import { Role } from "@/lib/role";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { getSignIn } from "@/store/AuthStore";
 
 
 export default function Signin() {
 
-  const auth = useAuth();
+  const signin = getSignIn();
+  const navigate = useNavigate();
 
   const form = useForm<SigninFormType>({
     resolver: zodResolver(SigninForm),
@@ -37,8 +38,10 @@ export default function Signin() {
       console.log(error);
     },
     onSuccess: (data) => {
+      console.log(data);
       const role = data.roles[0] == "ROLE_ADMIN" ? Role.ADMIN : Role.USER;
-      auth?.setAuthData({ token: data.accessToken, user: { id: data.id , name: data.name, email: data.email, role: role} });
+      signin({ token: data.accessToken, user: { id: data.id , name: data.name, email: data.email, role: role, courses: data.courses}});
+      navigate("/", { replace: true });
     }
   });
 
