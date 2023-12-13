@@ -229,4 +229,21 @@ public class CourseController {
         return ResponseEntity.ok().body(new MessageResponse("Course added successfully"));
     }
 
+    @PostMapping("/delete")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity<?> deleteCourse(@Valid @RequestBody CourseRequest deleteCourseRequest) {
+        if(deleteCourseRequest.getCourseCRNS().length == 0){
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: No courses to delete"));
+        }
+        for(String CRN: deleteCourseRequest.getCourseCRNS())
+        {
+            Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
+            if(course == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN +" not found"));
+            }
+            courseService.deleteCourse(course);
+        }
+        return ResponseEntity.ok().body(new MessageResponse("Course deleted successfully"));
+    }
+
 }
