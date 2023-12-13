@@ -1,6 +1,4 @@
 package com.example.Course.Registration.payload.request;
-
-// import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public class CourseRequest {
