@@ -179,6 +179,14 @@ public class CourseController {
                             .body(new MessageResponse("Error: Course " + CRN + " clashes with course " + c.getCRN()));
                 }
             }
+            Integer total_credits = user.getCourses().stream()
+                .mapToInt(Courses::getHours)
+                .sum();
+            if(total_credits + course.getHours() > 12){
+                return ResponseEntity.badRequest()
+                            .body(new MessageResponse("Error: Course " + CRN + " exceeds credit limit"));
+            }
+
             user.getCourses().add(course);
             userService.save(user);
             course.setSeats(course.getSeats() - 1);
