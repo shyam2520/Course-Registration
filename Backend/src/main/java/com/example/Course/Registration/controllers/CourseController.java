@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.example.Course.Registration.Services.CourseService;
@@ -30,7 +31,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/courses")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class CourseController {
 
     private String email=null;
@@ -38,6 +39,7 @@ public class CourseController {
 
     @Autowired
     private CourseService courseService;
+
     @Autowired
     private UserService userService;
 
@@ -77,36 +79,24 @@ public class CourseController {
         return courseService.getCourses();
     }
 
-    @GetMapping("/getCourse")
+    @GetMapping("/userCourses")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<?> getCourse(@Valid @RequestBody CourseRequest courseRequest) {
+    public ResponseEntity<?> getCourse() {
         if(email == null){
             setAuthenticatedUserEmail();
             if(email == null){
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: User not logged in"));
             }
         }
-        if(courseRequest.getCourseCRNS().length == 0){
-            return ResponseEntity.badRequest().body(new MessageResponse("Error: No courses to get"));
-        }
 
-        List<Courses> courses=null;
-        for(String CRN: courseRequest.getCourseCRNS())
-        {
-            Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
-            if(course == null){
-                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN +" not found"));
-            }
-            else{
-                if(courses == null){
-                    courses = Collections.singletonList(course);
-                }
-                else{
-                    courses.add(course);
-                }
-            }
+        User user = userService.findByEmail(email).orElse(null);
+        if(user == null){
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: User not found"));
         }
-        return ResponseEntity.ok().body(courses);
+        List<Courses> courses = new java.util.ArrayList<>(user.getCourses().stream().map(course -> courseService.getCourseByCRN(course.getCRN())).toList());
+
+        courses.sort(Comparator.comparing(Courses::getCRN));
+        return ResponseEntity.ok(courses);
 
     }
 

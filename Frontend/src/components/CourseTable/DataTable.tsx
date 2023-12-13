@@ -3,22 +3,26 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from ".
 import { Button } from "../ui/button";
 import { useState } from "react";
 import { useMutation } from "react-query";
-import { course } from "@/types/course";
-import { CourseRegisterType } from "@/lib/validators/courseregister";
+import { courseTable } from "@/types/courseTable";
+import { CourseRequestType } from "@/lib/validators/coursrequest";
 import { useToken } from "@/store/AuthStore";
 import axios from "axios";
+import { useRemoveCourse } from "@/store/CoureseStore";
 
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[],
   data: TData[],
+  from: string,
 }
 export default function DataTable<TData, TValue>({
   columns,
   data,
+  from,
 }: DataTableProps<TData, TValue>) {
 
   const token = useToken();
+  const removeCourse = useRemoveCourse();
   const [rowSelection, setRowSelection] = useState({})
   
   const table = useReactTable({
@@ -34,9 +38,9 @@ export default function DataTable<TData, TValue>({
 
   const {mutate: registerCourse} = useMutation({
     mutationFn: async () => {
-      const payload: CourseRegisterType = {
+      const payload: CourseRequestType = {
         courseCRNS: table.getFilteredSelectedRowModel().rows.map((row) => {
-          const course: course = row.original as course
+          const course: courseTable = row.original as courseTable
           return course.crn
         })
       }
@@ -56,13 +60,49 @@ export default function DataTable<TData, TValue>({
     }
   })
 
+  const {mutate: dropCourse} = useMutation({
+    mutationFn: async () => {
+      const payload: CourseRequestType = {
+        courseCRNS: table.getFilteredSelectedRowModel().rows.map((row) => {
+          const course: courseTable = row.original as courseTable
+          return course.crn
+        })
+      }
+
+      const { data } = await axios.post(import.meta.env.VITE_SPRING_URL + "/api/courses/drop", payload, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      })
+      return data
+    },
+    onError: (error) => {
+      console.log(error)
+    },
+    onSuccess: (data) => { 
+      console.log(data)
+      table.getFilteredSelectedRowModel().rows.forEach((row) => {
+        const course: courseTable = row.original as courseTable
+        removeCourse(course.crn)
+      })
+    }
+  })
+
 
   return (
     <div>
       <div className="flex items-center justify-end pb-4">
-        <Button variant={'default'} onClick={() => registerCourse()}>
-          Register
-        </Button>
+        {
+          from === 'register' ? 
+            (<Button variant={'default'} onClick={() => registerCourse()}>
+              Register
+            </Button>)
+            :
+            (<Button variant={'default'} onClick={() => dropCourse()}>
+              Drop
+            </Button>)
+        }
+        
       </div>
       <div className="rounded-md border">
         <Table>

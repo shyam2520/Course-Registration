@@ -8,9 +8,9 @@ import Signin from './components/Signin';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
 import Signup from './components/Signup';
+import Courseregister from './components/CourseRegister';
 import AdminDashboard from './components/AdminDashboard';
 import { Role } from './lib/role';
-
 
 function App() {
   const queryClient = new QueryClient();
@@ -25,24 +25,16 @@ function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="vite-ui-theme">
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <Routes>
-            <Route path={"/signup"} element={<Signup />} />
-            <Route path={"/signin"} element={<Signin />} />
-            <Route
-              path={"/"}
-              element={
-                isUserAnAdmin ? 
-                <ProtectedRoute token={token}>
-                    <AdminDashboard />
-                  </ProtectedRoute> :
-                <ProtectedRoute token={token}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-          </Routes>
-        </BrowserRouter>
+          <BrowserRouter>
+            <Routes>
+              <Route path={'/signup'} element={<Signup />}/>
+              <Route path={'/signin'} element={<Signin />}/>
+                <Route element={<ProtectedRoute token={token}/>}>
+                  <Route path={'/'} element={isUserAnAdmin ? <AdminDashboard /> : <Courseregister />} />
+                  <Route path={'/:user'} element={<Dashboard />}/>
+                </Route>
+            </Routes>
+          </BrowserRouter>
       </QueryClientProvider>
     </ThemeProvider>
   );

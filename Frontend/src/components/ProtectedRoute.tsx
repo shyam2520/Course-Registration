@@ -1,12 +1,11 @@
-import React from "react";
-import { Navigate } from "react-router-dom";
+
+import { Navigate, Outlet } from "react-router-dom";
 
 interface ProtectedRouteProps {
   token: string;
-  children: React.ReactNode;
 }
 
-export default function ProtectedRoute({ token, children }: ProtectedRouteProps) {
+export default function ProtectedRoute({ token }: ProtectedRouteProps) {
 
 
   if (!token) {
@@ -14,6 +13,6 @@ export default function ProtectedRoute({ token, children }: ProtectedRouteProps)
   }
 
   return (
-    children
+    <Outlet />
   )
 }

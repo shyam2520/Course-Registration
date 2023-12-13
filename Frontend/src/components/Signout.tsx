@@ -7,7 +7,7 @@ export default function Signout() {
   const signOut = getSignOut();
 
   return (
-    <Button variant={'secondary'} onClick={signOut}>
+    <Button variant={'ghost'} onClick={signOut}>
       Sign Out
     </Button>
   )
