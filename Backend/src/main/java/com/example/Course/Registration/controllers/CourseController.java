@@ -255,7 +255,7 @@ public class CourseController {
             System.out.println(course.getSeats());
             System.out.println(course.getTitle());
             try {
-                SimpleDateFormat inputFormat = new SimpleDateFormat("h:mm a");
+                SimpleDateFormat inputFormat = new SimpleDateFormat("hh:mm a");
                 Date startTime = inputFormat.parse(course.getClassTiming().getStartTime());
                 course.getClassTiming().setStartTime(startTime.toString());
                 Date endTime = inputFormat.parse(course.getClassTiming().getEndTime());
