@@ -22,10 +22,15 @@ import java.util.List;
 
 import com.example.Course.Registration.Services.CourseService;
 import com.example.Course.Registration.Services.UserService;
+import com.example.Course.Registration.models.ClassTiming;
 import com.example.Course.Registration.models.Courses;
 import com.example.Course.Registration.models.User;
+import com.example.Course.Registration.payload.request.AddCourseRequest;
 import com.example.Course.Registration.payload.request.CourseRequest;
 import com.example.Course.Registration.payload.response.MessageResponse;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import jakarta.validation.Valid;
 
@@ -100,6 +105,8 @@ public class CourseController {
 
     }
 
+
+
     @PostMapping("/register")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<?> registerCourse(@Valid @RequestBody CourseRequest registerCourseRequest) {
@@ -129,7 +136,7 @@ public class CourseController {
             if(user == null){
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: User not found"));
             }
-            // user.getCourses().anyMatch(c -> c.getCRN().equals(Integer.parseInt(CRN)));
+
             if(user.getCourses().stream().anyMatch(c -> c.getCRN().equals(Integer.parseInt(CRN)))){
                 return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN+" already registered"));
             }
@@ -138,6 +145,7 @@ public class CourseController {
         }
         return ResponseEntity.ok().body(new MessageResponse("Course registered successfully"));
     }
+    
 
     @PostMapping("/drop")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -172,6 +180,60 @@ public class CourseController {
             userService.save(user);
         }
         return ResponseEntity.ok().body(new MessageResponse("Course dropped successfully"));
+    }
+
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity<?> addCourse(@Valid @RequestBody AddCourseRequest courses)
+    {
+        for(Courses course: courses.getCourses()){
+        //    System.out.println(course.getTitle());
+            if(courseService.getCourseByCRN(course.getCRN()) != null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+course.getCRN()+" already exists"));
+            }
+
+            if(course.getSeats() == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+course.getCRN()+" has no seats"));
+            }
+            System.out.println(course.getClassTiming().getday());
+            System.out.println(course.getCRN());
+            System.out.println(course.getEnrollment());
+            System.out.println(course.getHours());
+            System.out.println(course.getInstructor());
+            System.out.println(course.getPrerequisite());
+            System.out.println(course.getSemester());
+            System.out.println(course.getSeats());
+            System.out.println(course.getTitle());
+            try{
+                SimpleDateFormat inputFormat = new SimpleDateFormat("h:mm a");
+                Date startTime= inputFormat.parse(course.getClassTiming().getStartTime());
+                course.getClassTiming().setStartTime(startTime.toString());
+                Date endTime= inputFormat.parse(course.getClassTiming().getEndTime());
+                course.getClassTiming().setEndTime(endTime.toString());
+            }
+            catch(ParseException e){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Invalid time format"));
+            }
+            courseService.addCourse(course);
+        }
+        return ResponseEntity.ok().body(new MessageResponse("Course added successfully"));
+    }
+
+    @PostMapping("/delete")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public ResponseEntity<?> deleteCourse(@Valid @RequestBody CourseRequest deleteCourseRequest) {
+        if(deleteCourseRequest.getCourseCRNS().length == 0){
+            return ResponseEntity.badRequest().body(new MessageResponse("Error: No courses to delete"));
+        }
+        for(String CRN: deleteCourseRequest.getCourseCRNS())
+        {
+            Courses course = courseService.getCourseByCRN(Integer.parseInt(CRN));
+            if(course == null){
+                return ResponseEntity.badRequest().body(new MessageResponse("Error: Course "+CRN +" not found"));
+            }
+            courseService.deleteCourse(course);
+        }
+        return ResponseEntity.ok().body(new MessageResponse("Course deleted successfully"));
     }
 
 }

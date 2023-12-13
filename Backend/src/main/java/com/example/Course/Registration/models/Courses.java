@@ -18,9 +18,8 @@ public class Courses {
     private Integer seats;
     private ClassTiming classTiming;
 
-    // private String startTime;
-    // private String endTime;
-    // private String classDay;
+    public Courses() {
+    }
 
     public Courses(String title, Integer CRN, String semester, Integer hours, Integer enrollment, Set<String> prerequisite, String instructor, Integer seats, ClassTiming classTiming) {
         this.title = title;
