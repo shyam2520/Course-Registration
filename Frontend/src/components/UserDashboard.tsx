@@ -1,19 +1,23 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import Navbar from "./Navbar";
-// import Sidebar from "./Sidebar";
 import Table from "./CourseTable/Table";
 import { courseTable } from "@/types/courseTable";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useToken } from "@/store/AuthStore";
 import axios from "axios";
 import { useMutation } from "react-query";
 import Sidebar from "./Sidebar";
 import { course } from "@/types/course";
+import { getAddAllCourse, getAllCourseReset, useAllCourse } from "@/store/AllCourseStore";
+import moment from "moment";
 
-export default function Courseregister() {
+export default function UserDashboard() {
 
   const token = useToken();
-  const [tableData, setTableData] = useState<courseTable[]>([])
+  const allCourses: courseTable[] = useAllCourse();
+  const allCourseReset = getAllCourseReset();
+  const addAllCourse = getAddAllCourse();
   
   const {mutate: getTableData} = useMutation({
     mutationFn: async () => {
@@ -38,18 +42,18 @@ export default function Courseregister() {
           enrolled: course.enrollment,
           seats: course.seats,
           instructor: course.instructor,
-          time: "Thursday 9:00 AM - 10:00 AM",
-          prerequisites: course.prerequisite.map((prereq) => parseInt(prereq)),
+          time: `${course.classTiming.day} ${moment(new Date(course.classTiming.startTime).toISOString()).format('LT')} - ${moment(new Date(course.classTiming.endTime).toISOString()).format('LT')}`,
         }
       })
-      setTableData(courses)
+      allCourseReset();
+      addAllCourse(courses)
     }
   })
 
   useEffect(() => {
     // get courses
     getTableData()
-  }, [getTableData]);
+  }, []);
 
   
   return (
@@ -57,7 +61,7 @@ export default function Courseregister() {
       <Navbar/>
       <div className="flex h-full">
         <Sidebar />
-        <Table data={tableData} from="register"/>
+        <Table data={allCourses} from="userDashboard"/>
       </div>
     </div>
   )

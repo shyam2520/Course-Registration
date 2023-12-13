@@ -4,12 +4,11 @@ export type course = {
   hours: number;
   enrollment: number;
   seats: number;
-  prerequisite: string[];
   instructor: string;
   classTiming: {
     startTime: string;
     endTime: string;
-    days: string;
+    day: string;
   }
   crn: number;
 }

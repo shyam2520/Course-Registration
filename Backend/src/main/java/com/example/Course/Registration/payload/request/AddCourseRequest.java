@@ -3,7 +3,7 @@ package com.example.Course.Registration.payload.request;
 import java.util.List;  
 import com.example.Course.Registration.models.Courses;
 
-public class AddCourseRequest {
+public class AddCourseRequest extends Request {
     private List<Courses> courses;
 
     public List<Courses> getCourses() {

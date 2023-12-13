@@ -1,7 +1,10 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { courseTable } from "@/types/courseTable";
 import { Checkbox } from "../ui/checkbox";
+import { getUser } from "@/store/AuthStore";
+import { Role } from "@/lib/role";
 
+const user = getUser();
 
 export const columns: ColumnDef<courseTable>[] = [
   {
@@ -41,23 +44,26 @@ export const columns: ColumnDef<courseTable>[] = [
     header: "Hours",
   },
   {
-    accessorKey: "enrolled",
-    header: "Enrolled",
+    accessorKey: `${user.role === Role.ADMIN ? "seats" : "enrolled"}`,
+    header: `${user.role === Role.ADMIN ? "Seats" : "Enrolled"}`,
     cell: ({ row }) => {
       const { enrolled, seats } = row.original;
 
-      return (
-        <div className={`flex ${enrolled > 90 ? "text-red-500" : "text-green-500"}`}>
-          <span>{enrolled}</span>
-          <span className="mx-1"> of </span>
+      if (user.role === Role.ADMIN) {
+        return (
           <span>{seats}</span>
-        </div>
-      )
+        )
+      }
+      else {
+        return (
+            <div className={`flex ${seats - enrolled < 20 ? "text-red-500" : "text-green-500"}`}>
+              <span>{enrolled}</span>
+              <span className="mx-1"> of </span>
+              <span>{seats}</span>
+            </div>
+        )
+      }
     }
-  },
-  {
-    accessorKey: "prerequisites",
-    header: "Prerequisites",
   },
   {
     accessorKey: "instructor",
@@ -65,6 +71,6 @@ export const columns: ColumnDef<courseTable>[] = [
   },
   {
     accessorKey: "time",
-    header: "Time",
+    header: "Day & Time",
   },
 ] 

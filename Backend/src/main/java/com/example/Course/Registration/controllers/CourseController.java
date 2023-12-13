@@ -1,11 +1,13 @@
 package com.example.Course.Registration.controllers;
 
+import com.example.Course.Registration.Services.CourseService;
+import com.example.Course.Registration.Util.Util;
+import com.example.Course.Registration.payload.response.AbstractResponseFactory;
+import com.example.Course.Registration.payload.response.MessageResponseFactory;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
 // import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.messaging.Message;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,19 +18,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import com.example.Course.Registration.Services.CourseService;
 import com.example.Course.Registration.Services.UserService;
-import com.example.Course.Registration.models.ClassTiming;
 import com.example.Course.Registration.models.Courses;
 import com.example.Course.Registration.models.User;
 import com.example.Course.Registration.payload.request.AddCourseRequest;
 import com.example.Course.Registration.payload.request.CourseRequest;
 import com.example.Course.Registration.payload.response.MessageResponse;
-import com.mongodb.internal.connection.Time;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,6 +47,8 @@ public class CourseController {
 
     @Autowired
     private UserService userService;
+    private AbstractResponseFactory messageFactory = new MessageResponseFactory();
+    private AbstractResponseFactory CourseFactory = new MessageResponseFactory();
 
     private void setAuthenticatedUserEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -106,26 +106,24 @@ public class CourseController {
 
     @GetMapping("/getAllCourses")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public List<Courses> getAllCourses() {
-        // setAuthenticatedUserEmail();
-        // if (email != null) {
-        //     // System.out.println(email);
-        //     User user = userService.findByEmail(email).orElse(null);
-      
-        // }
-        List<Courses> courses =  courseService.getCourses();
-        courses.sort(Comparator.comparing(Courses::getCRN));
-        return courses;
+    public ResponseEntity<?> getAllCourses() {
+         setAuthenticatedUserEmail();
+         if (email == null) {
+             return ResponseEntity.badRequest().body(messageFactory.getResponse("Error: User not logged in"));
+         }
+
+         List<Courses> courses = courseService.getCourses();
+         courses.sort(Comparator.comparing(Courses::getCRN));
+
+         return ResponseEntity.ok(courses);
     }
 
     @GetMapping("/userCourses")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<?> getCourse() {
+        setAuthenticatedUserEmail();
         if (email == null) {
-            setAuthenticatedUserEmail();
-            if (email == null) {
-                return ResponseEntity.badRequest().body(new MessageResponse("Error: User not logged in"));
-            }
+            return ResponseEntity.badRequest().body(messageFactory.getResponse("Error: User not logged in"));
         }
 
         User user = userService.findByEmail(email).orElse(null);
@@ -189,7 +187,6 @@ public class CourseController {
 
             user.getCourses().add(course);
             userService.save(user);
-            course.setSeats(course.getSeats() - 1);
             course.setEnrollment(course.getEnrollment() + 1);
             courseService.addCourse(course);
         }

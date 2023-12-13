@@ -8,22 +8,13 @@ import java.util.Optional;
 
 import com.example.Course.Registration.models.User;
 import com.example.Course.Registration.repository.UserRepository;
-
 @Service
-public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+public interface UserService {
 
-    public boolean existsByEmail(String email){
-        return userRepository.existsByEmail(email);
-    }
+    boolean existsByEmail(String email);
 
-    public Optional<User> findByEmail(String email){
-        return userRepository.findByEmail(email);
-    }
+    Optional<User> findByEmail(String email);
 
-    public User save(User user){
-        return userRepository.save(user);
-    }
+    User save(User user);
     
 }

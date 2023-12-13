@@ -1,6 +1,6 @@
 package com.example.Course.Registration.payload.response;
 
-public class MessageResponse {
+public class MessageResponse extends AbstractResponse {
 	private String message;
 
 	public MessageResponse(String message) {

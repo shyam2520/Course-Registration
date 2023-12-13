@@ -7,7 +7,10 @@ import { courseTable } from "@/types/courseTable";
 import { CourseRequestType } from "@/lib/validators/coursrequest";
 import { useToken } from "@/store/AuthStore";
 import axios from "axios";
-import { useRemoveCourse } from "@/store/CoureseStore";
+import { getIncrementEnrolled, getRemoveCourse } from "@/store/CoureseStore";
+import { getDecrementAllEnrolled, getIncrementAllEnrolled } from "@/store/AllCourseStore";
+import AddCoursesForm from "../AddCoursesForm";
+import { toast } from "sonner";
 
 
 interface DataTableProps<TData, TValue> {
@@ -22,7 +25,10 @@ export default function DataTable<TData, TValue>({
 }: DataTableProps<TData, TValue>) {
 
   const token = useToken();
-  const removeCourse = useRemoveCourse();
+  const removeCourse = getRemoveCourse();
+  const incrementEnrolled = getIncrementEnrolled();
+  const incrementAllEnrolled = getIncrementAllEnrolled();
+  const decrementEnrolled = getDecrementAllEnrolled();
   const [rowSelection, setRowSelection] = useState({})
   
   const table = useReactTable({
@@ -54,9 +60,25 @@ export default function DataTable<TData, TValue>({
     },
     onError: (error) => {
       console.log(error)
+      if(Object.keys(rowSelection).length === 1)
+        toast.error("Error registering course")
+      else
+        toast.error("Error registering courses")
     },
     onSuccess: (data) => { 
       console.log(data)
+      if (Object.keys(rowSelection).length === 1)
+        toast.success("Course registered successfully")
+      else
+        toast.success("Courses registered successfully")
+      table.getFilteredSelectedRowModel().rows.forEach((row) => {
+        const course: courseTable = row.original as courseTable
+        incrementEnrolled(course.crn)
+      })
+      incrementAllEnrolled(table.getFilteredSelectedRowModel().rows.map((row) => {
+        const course: courseTable = row.original as courseTable
+        return course.crn
+      }))
     }
   })
 
@@ -69,7 +91,7 @@ export default function DataTable<TData, TValue>({
         })
       }
 
-      const { data } = await axios.post(import.meta.env.VITE_SPRING_URL + "/api/courses/drop", payload, {
+      const { data } = await axios.post(import.meta.env.VITE_SPRING_URL + "/api/courses/" + `${from === "adminDashboard"? "delete": "drop"}`, payload, {
         headers: {
           Authorization: `Bearer ${token}`,
         }
@@ -78,29 +100,45 @@ export default function DataTable<TData, TValue>({
     },
     onError: (error) => {
       console.log(error)
+      if(Object.keys(rowSelection).length === 1)
+        toast.error("Error dropping course")
+      else
+        toast.error("Error deleting courses")
     },
     onSuccess: (data) => { 
       console.log(data)
+      if(Object.keys(rowSelection).length === 1)
+        toast.success("Course dropped successfully")
+      else
+        toast.success("Courses dropped successfully")
       table.getFilteredSelectedRowModel().rows.forEach((row) => {
         const course: courseTable = row.original as courseTable
         removeCourse(course.crn)
       })
+      { from === "adminDashboard" &&
+        decrementEnrolled(table.getFilteredSelectedRowModel().rows.map((row) => {
+          const course: courseTable = row.original as courseTable
+          return course.crn
+        }))
+      }
     }
   })
-
 
   return (
     <div>
       <div className="flex items-center justify-end pb-4">
         {
-          from === 'register' ? 
-            (<Button variant={'default'} onClick={() => registerCourse()}>
-              Register
-            </Button>)
-            :
-            (<Button variant={'default'} onClick={() => dropCourse()}>
-              Drop
-            </Button>)
+            from === 'userDashboard' ? 
+              (<Button variant={'default'} onClick={() => registerCourse()}>
+                Register Selected
+              </Button>)
+              :
+              ( <div className="space-x-2">
+                  <Button variant={'default'} onClick={() => dropCourse()}>
+                    {from === "adminDashboard" ? "Delete Selected" : "Drop Selected"}
+                  </Button>
+                  {from === "adminDashboard" && <AddCoursesForm />}
+                </div>)
         }
         
       </div>

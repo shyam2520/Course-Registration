@@ -1,41 +1,24 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 
 import Navbar from "./Navbar";
-// import Sidebar from "./Sidebar";
 import Table from "./CourseTable/Table";
-import { course } from "@/types/course";
-import { useEffect, useState } from "react";
+import { courseTable } from "@/types/courseTable";
+import { useEffect } from "react";
 import { useToken } from "@/store/AuthStore";
 import axios from "axios";
 import { useMutation } from "react-query";
+import { course } from "@/types/course";
+import { getAddAllCourse, getAllCourseReset, useAllCourse } from "@/store/AllCourseStore";
+import moment from "moment";
 
 export default function AdminDashboard() {
 
   const token = useToken();
-  const [tableData, setTableData] = useState<course[]>([{
-    id: "1",
-    title: "test",
-    crn: 6305,
-    semester: "Fall",
-    hours: 3,
-    enrolled: 0,
-    seats: 30,
-    instructor: "test",
-    time: "test",
-    prerequisites: ["test"]
-  }, {
-    id: "1",
-    title: "test",
-    crn: 6200,
-    semester: "Fall",
-    hours: 3,
-    enrolled: 0,
-    seats: 30,
-    instructor: "test",
-    time: "test",
-    prerequisites: ["test"]
-  }])
+  const allCourses: courseTable[] = useAllCourse();
+  const allCourseReset = getAllCourseReset();
+  const addAllCourse = getAddAllCourse();
   
-  const {mutate: getTableData, isLoading} = useMutation({
+  const {mutate: getTableData} = useMutation({
     mutationFn: async () => {
       const { data } = await axios.get(import.meta.env.VITE_SPRING_URL + "/api/courses/getAllCourses", {
         headers: {
@@ -49,6 +32,20 @@ export default function AdminDashboard() {
     },
     onSuccess: (data) => { 
       console.log(data)
+      const courses: courseTable[] = data.map((course: course) => {
+        return {
+          title: course.title,
+          crn: course.crn,
+          semester: course.semester,
+          hours: course.hours,
+          enrolled: course.enrollment,
+          seats: course.seats,
+          instructor: course.instructor,
+          time: `${course.classTiming.day} ${moment(new Date(course.classTiming.startTime).toISOString()).format('LT')} - ${moment(new Date(course.classTiming.endTime).toISOString()).format('LT')}`,
+        }
+      })
+      allCourseReset();
+      addAllCourse(courses)
     }
   })
 
@@ -59,12 +56,10 @@ export default function AdminDashboard() {
 
   
   return (
-    <div>
+    <div className="h-screen">
       <Navbar/>
-      <div>
-        {/* <Sidebar /> */}
-        <Table data={tableData} />
-        {/* Main section component */}
+      <div className="flex h-full">
+        <Table data={allCourses} from="adminDashboard"/>
       </div>
     </div>
   )

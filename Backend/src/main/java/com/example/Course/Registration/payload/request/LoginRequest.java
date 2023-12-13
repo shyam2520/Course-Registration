@@ -2,7 +2,7 @@ package com.example.Course.Registration.payload.request;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class LoginRequest {
+public class LoginRequest extends Request {
 	@NotBlank
 	private String email;
 
