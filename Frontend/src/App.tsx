@@ -8,7 +8,7 @@ import Signin from './components/Signin';
 import ProtectedRoute from './components/ProtectedRoute';
 import Dashboard from './components/Dashboard';
 import Signup from './components/Signup';
-
+import Courseregister from './components/CourseRegister';
 
 function App() {
 
@@ -22,11 +22,10 @@ function App() {
             <Routes>
               <Route path={'/signup'} element={<Signup />}/>
               <Route path={'/signin'} element={<Signin />}/>
-              <Route path={'/'} element={
-                <ProtectedRoute token={token}>
-                  <Dashboard />
-                </ProtectedRoute>
-              }/>
+                <Route element={<ProtectedRoute token={token}/>}>
+                  <Route path={'/'} element={<Courseregister />}/>
+                  <Route path={'/:user'} element={<Dashboard />}/>
+                </Route>
             </Routes>
           </BrowserRouter>
       </QueryClientProvider>

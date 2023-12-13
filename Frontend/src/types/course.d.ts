@@ -1,13 +1,15 @@
-
 export type course = {
-  id: string;
   title: string;
-  crn: number;
   semester: string;
   hours: number;
-  enrolled: number;
+  enrollment: number;
   seats: number;
-  prerequisites: string[];
+  prerequisite: string[];
   instructor: string;
-  time: string;
-};
+  classTiming: {
+    startTime: string;
+    endTime: string;
+    days: string;
+  }
+  crn: number;
+}

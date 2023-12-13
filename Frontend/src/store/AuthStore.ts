@@ -2,6 +2,7 @@
 import { User } from "@/types/user";
 import { createStore, useStore } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
+import { getAddCourse, getReset } from "./CoureseStore";
 
 export interface authStoreType {
   token: string;
@@ -9,6 +10,9 @@ export interface authStoreType {
   signIn: (data: { token: string; user: User; }) => void;
   signOut: () => void;
 }
+
+const addCourse = getAddCourse();
+const resetCourse = getReset();
 
 const authStore = createStore<authStoreType>()(
   persist(
@@ -22,12 +26,16 @@ const authStore = createStore<authStoreType>()(
         courses: [],
       },
       signIn: (data) => {
+        data.user.courses.forEach((course) => {
+          addCourse(course);
+        })
         set(() => ({
           token: data.token,
           user: data.user,
         }))
       },
       signOut: () => {
+        resetCourse();
         set(() => ({
           token: '',
           user: {

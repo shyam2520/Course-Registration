@@ -1,23 +1,26 @@
-import { course } from "@/types/course";
+
+import { courseTable } from "@/types/courseTable";
 import { createStore, useStore } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 interface CourseStore {
-  courses: course[];
-  addCourse: (course: course) => void;
-  removeCourse: (course: course) => void;
+  courses: courseTable[];
+  addCourse: (course: courseTable) => void;
+  removeCourse: (crn: number) => void;
+  reset: () => void;
 }
 
 const courseStore = createStore<CourseStore>()(
   persist(
     (set) => ({
       courses: [],
-      addCourse: (course: course) => set((state) => ({
+      addCourse: (course: courseTable) => set((state) => ({
         courses: [...state.courses, course]
       })),
-      removeCourse: (course: course) => set((state) => ({
-        courses: state.courses.filter((c) => c.id !== course.id)
-      }))
+      removeCourse: (crn: number) => set((state) => ({
+        courses: state.courses.filter((c) => c.crn !== crn)
+      })),
+      reset: () => set(() => ({ courses: [] })),
     }),
     {
       name: "course-storage",
@@ -30,13 +33,16 @@ const courseStore = createStore<CourseStore>()(
 const coursesSelector = (state: CourseStore) => state.courses;
 const addCourseSelector = (state: CourseStore) => state.addCourse;
 const removeCourseSelector = (state: CourseStore) => state.removeCourse;
+const resetSelector = (state: CourseStore) => state.reset;
 
 //getter
 export const getCourses = () => coursesSelector(courseStore.getState());
 export const getAddCourse = () => addCourseSelector(courseStore.getState());
 export const getRemoveCourse = () => removeCourseSelector(courseStore.getState());
+export const getReset = () => resetSelector(courseStore.getState());
 
 //hooks
-export const useCourseStore = () => useStore(courseStore, coursesSelector);
+export const useCourse = () => useStore(courseStore, coursesSelector);
 export const useAddCourse = () => useStore(courseStore, addCourseSelector);
 export const useRemoveCourse = () => useStore(courseStore, removeCourseSelector);
+export const useReset = () => useStore(courseStore, resetSelector);

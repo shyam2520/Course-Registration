@@ -2,29 +2,25 @@
 import Navbar from "./Navbar";
 // import Sidebar from "./Sidebar";
 import Table from "./CourseTable/Table";
+import { courseTable } from "@/types/courseTable";
+import { useEffect, useState } from "react";
+import { useToken } from "@/store/AuthStore";
 import axios from "axios";
 import { useMutation } from "react-query";
-import { useToken } from "@/store/AuthStore";
-import { useEffect } from "react";
-import { courseTable } from "@/types/courseTable";
 import Sidebar from "./Sidebar";
 import { course } from "@/types/course";
-import { getReset, useAddCourse, useCourse } from "@/store/CoureseStore";
 
-export default function Dashboard() {
+export default function Courseregister() {
 
-  const courses: courseTable[] = useCourse();
-  const addCourse = useAddCourse();
-  const reset = getReset();
   const token = useToken();
-
+  const [tableData, setTableData] = useState<courseTable[]>([])
+  
   const {mutate: getTableData} = useMutation({
     mutationFn: async () => {
-
-      const { data } = await axios.get(import.meta.env.VITE_SPRING_URL + "/api/courses/userCourses",{
+      const { data } = await axios.get(import.meta.env.VITE_SPRING_URL + "/api/courses/getAllCourses", {
         headers: {
           Authorization: `Bearer ${token}`,
-        },
+        }
       })
       return data
     },
@@ -33,9 +29,8 @@ export default function Dashboard() {
     },
     onSuccess: (data) => { 
       console.log(data)
-      reset();
-      data.forEach((course: course) => {
-        addCourse({
+      const courses: courseTable[] = data.map((course: course) => {
+        return {
           title: course.title,
           crn: course.crn,
           semester: course.semester,
@@ -44,17 +39,17 @@ export default function Dashboard() {
           seats: course.seats,
           instructor: course.instructor,
           time: "Thursday 9:00 AM - 10:00 AM",
-          prerequisites: course.prerequisite,
-        })
+          prerequisites: course.prerequisite.map((prereq) => parseInt(prereq)),
+        }
       })
+      setTableData(courses)
     }
   })
 
   useEffect(() => {
     // get courses
     getTableData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [getTableData]);
 
   
   return (
@@ -62,7 +57,7 @@ export default function Dashboard() {
       <Navbar/>
       <div className="flex h-full">
         <Sidebar />
-        <Table data={courses} from="drop"/>
+        <Table data={tableData} from="register"/>
       </div>
     </div>
   )
