@@ -12,8 +12,12 @@ import com.example.Course.Registration.repository.UserRepository;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-	@Autowired
 	UserRepository userRepository;
+
+	@Autowired
+	public UserDetailsServiceImpl(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
 	@Override
 	@Transactional

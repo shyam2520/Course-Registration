@@ -10,6 +10,7 @@ import { Role } from "@/lib/role";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader2 } from "lucide-react";
 import { getSignIn } from "@/store/AuthStore";
+import { toast } from "sonner";
 
 
 export default function Signin() {
@@ -36,11 +37,13 @@ export default function Signin() {
     },
     onError: (error) => {
       console.log(error);
+      toast.error("Something went wrong");
     },
     onSuccess: (data) => {
       console.log(data);
       const role = data.roles[0] == "ROLE_ADMIN" ? Role.ADMIN : Role.USER;
-      signin({ token: data.accessToken, user: { id: data.id , name: data.name, email: data.email, role: role, courses: data.courses}});
+      signin({ token: data.accessToken, user: { id: data.id , name: data.name, email: data.email, role: role}});
+      toast.success("Signed in successfully");
       navigate("/", { replace: true });
     }
   });
@@ -54,9 +57,11 @@ export default function Signin() {
         />
       </div>
       <div className="flex flex-col lg:w-6/12 w-full p-10">
-        <Button variant={'ghost'} className="self-end">
-          <Link to={"/signup"}>Sign Up</Link>
-        </Button>
+        <Link to={"/signup"} className="self-end">
+          <Button variant={'ghost'}>
+            Sign Up
+          </Button>
+        </Link>
         <div className="flex flex-1 flex-col max-w-5xl mx-auto justify-center items-center space-y-6">
           <h1 className="text-4xl font-semibold">Sign In</h1>
           <Form {...form}>

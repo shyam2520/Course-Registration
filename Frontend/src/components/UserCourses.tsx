@@ -1,6 +1,5 @@
 
 import Navbar from "./Navbar";
-// import Sidebar from "./Sidebar";
 import Table from "./CourseTable/Table";
 import axios from "axios";
 import { useMutation } from "react-query";
@@ -10,8 +9,9 @@ import { courseTable } from "@/types/courseTable";
 import Sidebar from "./Sidebar";
 import { course } from "@/types/course";
 import { getReset, useAddCourse, useCourse } from "@/store/CoureseStore";
+import moment from "moment";
 
-export default function Dashboard() {
+export default function UserCourses() {
 
   const courses: courseTable[] = useCourse();
   const addCourse = useAddCourse();
@@ -43,8 +43,7 @@ export default function Dashboard() {
           enrolled: course.enrollment,
           seats: course.seats,
           instructor: course.instructor,
-          time: "Thursday 9:00 AM - 10:00 AM",
-          prerequisites: course.prerequisite,
+          time: `${course.classTiming.day} ${moment(new Date(course.classTiming.startTime).toISOString()).format('LT')} - ${moment(new Date(course.classTiming.endTime).toISOString()).format('LT')}`,
         })
       })
     }

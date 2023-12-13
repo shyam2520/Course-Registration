@@ -1,7 +1,7 @@
 package com.example.Course.Registration.payload.response;
 import java.util.Set;
 
-public class CourseResponse {
+public class CourseResponse extends AbstractResponse {
     private String id;
     private String title;
     private Integer CRN;
@@ -22,6 +22,20 @@ public class CourseResponse {
         this.prerequisite = prerequisite;
         this.instructor = instructor;
         this.seats = seats;
+    }
+
+    public CourseResponse(String message) {
+        super();
+        String[] tokens = message.split(",");
+        this.id = tokens[0];
+        this.title = tokens[1];
+        this.CRN = Integer.parseInt(tokens[2]);
+        this.semester = tokens[3];
+        this.hours = Integer.parseInt(tokens[4]);
+        this.enrollment = tokens[5];
+        this.prerequisite = Set.of(tokens[6].split(";"));
+        this.instructor = tokens[7];
+        this.seats = Integer.parseInt(tokens[8]);
     }
 
     public void setTitle(String title) {

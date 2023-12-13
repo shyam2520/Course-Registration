@@ -1,7 +1,7 @@
 package com.example.Course.Registration.payload.request;
 import jakarta.validation.constraints.NotNull;
 
-public class CourseRequest {
+public class CourseRequest extends Request {
     @NotNull
     private String[] courseCRNS;
 

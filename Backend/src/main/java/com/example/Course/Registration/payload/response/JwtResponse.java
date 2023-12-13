@@ -2,30 +2,35 @@ package com.example.Course.Registration.payload.response;
 
 import java.util.List;
 
-public class JwtResponse {
+public class JwtResponse extends AbstractResponse {
 	private String token;
 	private String type = "Bearer";
 	private String id;
 	private String name;
-	// private String email;
+	private String email;
 	private List<String> roles;
-	private List<String> courses;
 
-	public JwtResponse(String accessToken, String id, String name, List<String> roles,List<String> courses) {
+	public JwtResponse(String accessToken, String id, String name, String email, List<String> roles,List<String> courses) {
+		super();
 		this.token = accessToken;
 		this.id = id;
 		this.name = name;
-		// this.email = email;
+		this.email = email;
 		this.roles = roles;
-		this.courses = courses;
+	}
+
+	public JwtResponse(String message) {
+		super();
+		String[] parts = message.split(",");
+		this.token = parts[0];
+		this.id = parts[1];
+		this.name = parts[2];
+		this.email = parts[3];
+		this.roles = List.of(parts[4]);
 	}
 
 	public String getAccessToken() {
 		return token;
-	}
-
-	public List<String> getCourses() {
-		return courses;
 	}
 
 	public void setAccessToken(String accessToken) {
@@ -48,13 +53,13 @@ public class JwtResponse {
 		this.id = id;
 	}
 
-	// public String getEmail() {
-	// 	return email;
-	// }
+	 public String getEmail() {
+	 	return email;
+	 }
 
-	// public void setEmail(String email) {
-	// 	this.email = email;
-	// }
+	 public void setEmail(String email) {
+	 	this.email = email;
+	 }
 
 	public String getName() {
 		return name;
