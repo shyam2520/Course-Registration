@@ -26,10 +26,8 @@ public class User {
     @NotBlank
     private String branch;
     private String degree;
-
     @DBRef
     private Set<Role> roles = new HashSet<>();
-
     @DBRef
     private Set<Courses> courses = new HashSet<>();
 
