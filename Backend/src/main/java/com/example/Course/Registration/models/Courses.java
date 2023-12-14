@@ -13,7 +13,6 @@ public class Courses {
     private String semester;
     private Integer hours;
     private Integer enrollment;
-    private Set<String> prerequisite; 
     private String instructor;
     private Integer seats;
     private ClassTiming classTiming;
@@ -21,13 +20,12 @@ public class Courses {
     public Courses() {
     }
 
-    public Courses(String title, Integer CRN, String semester, Integer hours, Integer enrollment, Set<String> prerequisite, String instructor, Integer seats, ClassTiming classTiming) {
+    public Courses(String title, Integer CRN, String semester, Integer hours, Integer enrollment, String instructor, Integer seats, ClassTiming classTiming) {
         this.title = title;
         this.CRN = CRN;
         this.semester = semester;
         this.hours = hours;
         this.enrollment = enrollment;
-        this.prerequisite = prerequisite;
         this.instructor = instructor;
         this.seats = seats;
         this.classTiming = classTiming;
@@ -60,10 +58,7 @@ public class Courses {
     public void setEnrollment(Integer enrollment) {
         this.enrollment = enrollment;
     }
-    
-    public void setPrerequisite(Set<String> prerequisite) {
-        this.prerequisite = prerequisite;
-    }
+
     
     public void setInstructor(String instructor) {
         this.instructor = instructor;
@@ -91,10 +86,6 @@ public class Courses {
     
     public Integer getEnrollment() {
         return enrollment;
-    }
-    
-    public Set<String> getPrerequisite() {
-        return prerequisite;
     }
     
     public String getInstructor() {

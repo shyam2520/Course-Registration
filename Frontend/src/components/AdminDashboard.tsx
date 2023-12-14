@@ -8,15 +8,15 @@ import { useToken } from "@/store/AuthStore";
 import axios from "axios";
 import { useMutation } from "react-query";
 import { course } from "@/types/course";
-import { getAddAllCourse, getAllCourseReset, useAllCourse } from "@/store/AllCourseStore";
 import moment from "moment";
+import { getReset, useAddCourse, useCourse } from "@/store/CoureseStore";
 
 export default function AdminDashboard() {
 
   const token = useToken();
-  const allCourses: courseTable[] = useAllCourse();
-  const allCourseReset = getAllCourseReset();
-  const addAllCourse = getAddAllCourse();
+  const course: courseTable[] = useCourse();
+  const addCourse = useAddCourse();
+  const reset = getReset();
   
   const {mutate: getTableData} = useMutation({
     mutationFn: async () => {
@@ -32,8 +32,9 @@ export default function AdminDashboard() {
     },
     onSuccess: (data) => { 
       console.log(data)
-      const courses: courseTable[] = data.map((course: course) => {
-        return {
+      reset();
+      data.map((course: course) => {
+        addCourse({
           title: course.title,
           crn: course.crn,
           semester: course.semester,
@@ -42,10 +43,8 @@ export default function AdminDashboard() {
           seats: course.seats,
           instructor: course.instructor,
           time: `${course.classTiming.day} ${moment(new Date(course.classTiming.startTime).toISOString()).format('LT')} - ${moment(new Date(course.classTiming.endTime).toISOString()).format('LT')}`,
-        }
+        })
       })
-      allCourseReset();
-      addAllCourse(courses)
     }
   })
 
@@ -59,7 +58,7 @@ export default function AdminDashboard() {
     <div className="h-screen">
       <Navbar/>
       <div className="flex h-full">
-        <Table data={allCourses} from="adminDashboard"/>
+        <Table data={course} from="adminDashboard"/>
       </div>
     </div>
   )

@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public interface CourseService {
     List<Courses> getCourses();
 
@@ -16,8 +15,6 @@ public interface CourseService {
     Courses getCourseByCRN(Integer CRN);
 
     List<Courses> getCourseBySemester(String semester);
-
-    Courses getCourseByPrerequisite(String prerequisite);
 
     List<Courses> getCourseByInstructor(String instructor);
 

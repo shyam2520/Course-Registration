@@ -7,6 +7,7 @@ import java.util.Set;
 import com.example.Course.Registration.Util.Util;
 import com.example.Course.Registration.payload.response.AbstractResponseFactory;
 import com.example.Course.Registration.payload.response.JwtResponseFactory;
+import com.example.Course.Registration.payload.response.MessageResponseFactory;
 import com.example.Course.Registration.security.jwt.JwtUtils;
 import com.example.Course.Registration.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -48,6 +49,10 @@ public class AuthController {
 	PasswordEncoder encoder;
 
     JwtUtils jwtUtils;
+
+	AbstractResponseFactory messageFactory = new MessageResponseFactory();
+
+	AbstractResponseFactory jwtFactory = new JwtResponseFactory();
 	@Autowired
 	public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
 		this.authenticationManager = authenticationManager;
@@ -71,8 +76,7 @@ public class AuthController {
 				.map(GrantedAuthority::getAuthority)
 				.toList();
 
-		AbstractResponseFactory messageFactory = new JwtResponseFactory();
-		return ResponseEntity.ok(messageFactory.getResponse(Util.makeCSVString(List.of(jwt, userDetails.getId(), userDetails.getFullName(),userDetails.getUsername(), roles.get(0)))));
+		return ResponseEntity.ok(jwtFactory.getResponse(Util.makeCSVString(List.of(jwt, userDetails.getId(), userDetails.getFullName(),userDetails.getUsername(), roles.get(0)))));
 	}
 
 	@PostMapping("/signup")
@@ -87,7 +91,7 @@ public class AuthController {
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
 			return ResponseEntity
 					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
+					.body(messageFactory.getResponse("Error: Email is already in use!"));
 		}
 
 		// Create new user's account
@@ -140,7 +144,7 @@ public class AuthController {
 		}
 		userRepository.save(user);
 
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+		return ResponseEntity.ok(messageFactory.getResponse("User registered successfully!"));
 	}
 
 	
