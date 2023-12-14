@@ -1,16 +1,35 @@
-import Dashboard from "@/components/Dashboard"
-import Signin from "@/components/Signin"
-import Signup from "@/components/Signup"
-import { RouterProvider, createBrowserRouter } from "react-router-dom"
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import Signin from "@/components/Signin";
+import Signup from "@/components/Signup";
+import AdminDashboard from "@/components/AdminDashboard";
+import UserCourses from "@/components/userCourses";
+import ProtectedRoute from "@/components/ProtectedRoute";
+import { useToken } from "@/store/AuthStore";
 
+const Routes = () => {
 
-export const Route = () => {
+  const token = useToken();
 
-  const router = createBrowserRouter([
+  // Define routes accessible only to authenticated users
+  const routesForAuthenticatedOnly = [
     {
       path: "/",
-      element: <Dashboard />,
+      element: <ProtectedRoute token={token} />, // Wrap the component in ProtectedRoute
+      children: [
+        {
+          path: "/",
+          element: <AdminDashboard />,
+        },
+        {
+          path: "/:user",
+          element: <UserCourses />,
+        },
+      ],
     },
+  ];
+
+  // Define routes accessible only to non-authenticated users
+  const routesForNotAuthenticatedOnly = [
     {
       path: "/signin",
       element: <Signin />,
@@ -19,11 +38,16 @@ export const Route = () => {
       path: "/signup",
       element: <Signup />,
     },
-  ]
-  );
+  ];
 
-  return (
-    <RouterProvider router={router} />
-  )
-}
+  // Combine and conditionally include routes based on authentication status
+  const router = createBrowserRouter([
+    ...(!token ? routesForNotAuthenticatedOnly : []),
+    ...routesForAuthenticatedOnly,
+  ]);
 
+  // Provide the router configuration using RouterProvider
+  return <RouterProvider router={router} />;
+};
+
+export default Routes;

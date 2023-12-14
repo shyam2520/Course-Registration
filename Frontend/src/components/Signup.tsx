@@ -8,6 +8,7 @@ import { useMutation } from "react-query";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 
 export default function Signup() {
@@ -39,9 +40,11 @@ export default function Signup() {
     },
     onError: (error) => {
       console.log(error);
+      toast.error("Something went wrong");
     },
     onSuccess: (data) => {
       console.log(data);
+      toast.success("Account created successfully");
     }
   });
   
@@ -55,9 +58,11 @@ export default function Signup() {
         />
       </div>
       <div className="flex flex-col lg:w-6/12 w-full p-10 sm:space-y-0 space-y-10">
-        <Button variant={'ghost'} className="self-end">
-          <Link to={"/signin"}>Sign In</Link>
-        </Button>
+        <Link to={"/signin"} className="self-end">
+            <Button variant={'ghost'}>
+              Sign In
+            </Button>
+        </Link>
         <div className="flex flex-1 flex-col max-w-5xl mx-auto justify-center items-center space-y-6">
           <h1 className="text-2xl font-semibold">Sign Up</h1>
           <Form {...form}>
@@ -108,7 +113,7 @@ export default function Signup() {
                   <FormItem>
                     <FormLabel>Branch</FormLabel>
                     <FormControl>
-                      <Input type="branch" placeholder="CSE" {...field} />
+                      <Input placeholder="CSE" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -121,7 +126,7 @@ export default function Signup() {
                   <FormItem>
                     <FormLabel>Degree</FormLabel>
                     <FormControl>
-                      <Input type="degree" placeholder="B.Tech" {...field} />
+                      <Input placeholder="B.Tech" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

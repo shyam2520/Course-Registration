@@ -3,8 +3,11 @@ package com.example.Course.Registration.controllers;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import com.example.Course.Registration.Util.Util;
+import com.example.Course.Registration.payload.response.AbstractResponseFactory;
+import com.example.Course.Registration.payload.response.JwtResponseFactory;
+import com.example.Course.Registration.payload.response.MessageResponseFactory;
 import com.example.Course.Registration.security.jwt.JwtUtils;
 import com.example.Course.Registration.security.services.UserDetailsImpl;
 import jakarta.validation.Valid;
@@ -14,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,29 +31,36 @@ import com.example.Course.Registration.models.Role;
 import com.example.Course.Registration.models.User;
 import com.example.Course.Registration.payload.request.LoginRequest;
 import com.example.Course.Registration.payload.request.SignupRequest;
-import com.example.Course.Registration.payload.response.JwtResponse;
 import com.example.Course.Registration.payload.response.MessageResponse;
 import com.example.Course.Registration.repository.RoleRepository;
 import com.example.Course.Registration.repository.UserRepository;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-	@Autowired
+
 	AuthenticationManager authenticationManager;
 
-	@Autowired
 	UserRepository userRepository;
 
-	@Autowired
 	RoleRepository roleRepository;
 
-	@Autowired
 	PasswordEncoder encoder;
 
-	@Autowired
     JwtUtils jwtUtils;
+
+	AbstractResponseFactory messageFactory = new MessageResponseFactory();
+
+	AbstractResponseFactory jwtFactory = new JwtResponseFactory();
+	@Autowired
+	public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
+		this.authenticationManager = authenticationManager;
+		this.userRepository = userRepository;
+		this.roleRepository = roleRepository;
+		this.encoder = encoder;
+		this.jwtUtils = jwtUtils;
+	}
 
 	@PostMapping("/signin")
 	public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
@@ -62,14 +73,10 @@ public class AuthController {
 		
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 		List<String> roles = userDetails.getAuthorities().stream()
-				.map(item -> item.getAuthority())
-				.collect(Collectors.toList());
+				.map(GrantedAuthority::getAuthority)
+				.toList();
 
-		return ResponseEntity.ok(new JwtResponse(jwt, 
-												 userDetails.getId(), 
-												 userDetails.getFullName(), 
-												 userDetails.getEmail(), 
-												 roles));
+		return ResponseEntity.ok(jwtFactory.getResponse(Util.makeCSVString(List.of(jwt, userDetails.getId(), userDetails.getFullName(),userDetails.getUsername(), roles.get(0)))));
 	}
 
 	@PostMapping("/signup")
@@ -84,7 +91,7 @@ public class AuthController {
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
 			return ResponseEntity
 					.badRequest()
-					.body(new MessageResponse("Error: Email is already in use!"));
+					.body(messageFactory.getResponse("Error: Email is already in use!"));
 		}
 
 		// Create new user's account
@@ -126,17 +133,19 @@ public class AuthController {
 
 		user.setRoles(roles);
 		System.out.println("Details of User:");
-		System.out.println("\nName :"+user.getName());
-		System.out.println("\nEmail :"+user.getEmail());
-		System.out.println("\nPassword :"+user.getPassword());
-		System.out.println("\nBranch :"+user.getBranch());
-		System.out.println("\nDegree :"+user.getDegree());
+		System.out.println("Name :"+user.getName());
+		System.out.println("Email :"+user.getEmail());
+		System.out.println("Password :"+user.getPassword());
+		System.out.println("Branch :"+user.getBranch());
+		System.out.println("Degree :"+user.getDegree());
 		// System.out.println("\nRoles :"+user.getRoles());
 		for (Role role2 : user.getRoles()) {
-			System.out.println("\nRole :"+role2.getName());
+			System.out.println("Role :"+role2.getName());
 		}
 		userRepository.save(user);
 
-		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
+		return ResponseEntity.ok(messageFactory.getResponse("User registered successfully!"));
 	}
+
+	
 }
