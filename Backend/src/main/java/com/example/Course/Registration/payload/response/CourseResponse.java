@@ -9,12 +9,12 @@ public class CourseResponse extends AbstractResponse {
     private Integer CRN;
     private String semester;
     private Integer hours;
-    private String enrollment;
+    private Integer enrollment;
     private String instructor;
     private Integer seats;
     private ClassTiming classTiming;
 
-    public CourseResponse(String id, String title, Integer CRN, String semester, Integer hours, String enrollment, String instructor, Integer seats, ClassTiming classTiming) {
+    public CourseResponse(String id, String title, Integer CRN, String semester, Integer hours, Integer enrollment, String instructor, Integer seats, ClassTiming classTiming) {
         this.id = id;
         this.title = title;
         this.CRN = CRN;
@@ -34,7 +34,7 @@ public class CourseResponse extends AbstractResponse {
         this.CRN = Integer.parseInt(tokens[2]);
         this.semester = tokens[3];
         this.hours = Integer.parseInt(tokens[4]);
-        this.enrollment = tokens[5];
+        this.enrollment = Integer.parseInt(tokens[5]);
         this.instructor = tokens[6];
         this.seats = Integer.parseInt(tokens[7]);
         String[] classTimingTokens = tokens[8].split("-");
@@ -57,7 +57,7 @@ public class CourseResponse extends AbstractResponse {
         this.hours = hours;
     }
 
-    public void setEnrollment(String enrollment) {
+    public void setEnrollment(Integer enrollment) {
         this.enrollment = enrollment;
     }
 
@@ -85,7 +85,7 @@ public class CourseResponse extends AbstractResponse {
         return hours;
     }
 
-    public String getEnrollment() {
+    public Integer getEnrollment() {
         return enrollment;
     }
 

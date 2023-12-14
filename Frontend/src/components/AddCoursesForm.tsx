@@ -82,7 +82,8 @@ export default function AddCoursesForm() {
     onError: (error) => {
       console.log(error)
       removeCourse(crn)
-      toast.error("Something went wrong")
+      setCrn(0)
+      
     },
     onSuccess: (data) => {
       console.log(data)
