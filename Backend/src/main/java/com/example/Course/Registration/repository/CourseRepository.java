@@ -11,7 +11,6 @@ public interface CourseRepository extends MongoRepository<Courses, String> {
     List<Courses> findBySemester(String semester);
     // List<Courses> findByHours(Integer hours);
     // List<Courses> findByEnrollment(String enrollment);
-    List<Courses> findByPrerequisite(String prerequisite);
     List<Courses> findByInstructor(String instructor);
     // List<Courses> findBySeats(Integer seats);
 

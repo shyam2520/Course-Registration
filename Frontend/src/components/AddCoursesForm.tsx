@@ -13,10 +13,15 @@ import { useMutation } from "react-query";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
+import { toast } from "sonner";
+import { getAddCourse, getRemoveCourse } from "@/store/CoureseStore";
+import { useState } from "react";
 
 export default function AddCoursesForm() {
 
   const token = useToken();
+  const addtoCoursestore = getAddCourse();
+  const removeCourse = getRemoveCourse();
 
   const form = useForm<courseAddType>({
     resolver: zodResolver(courseAdd),
@@ -34,7 +39,7 @@ export default function AddCoursesForm() {
     },
   })
 
-  
+  const [crn, setCrn] = useState<number>(0);
 
   const { mutate: addCourse, isLoading } = useMutation({
     mutationFn: async ( { title, crn, semester, seats, enrollment, hours, instructor, startTime, endTime, day }: courseAddType ) => {
@@ -52,7 +57,18 @@ export default function AddCoursesForm() {
           day: day,
         }
       }
-
+      setCrn(crn)
+      addtoCoursestore({
+        title: title,
+        crn: crn,
+        semester: semester,
+        hours: hours,
+        enrolled: enrollment,
+        seats: seats,
+        instructor: instructor,
+        time: `${day} ${moment(startTime, "HH:mm").format("hh:mm A")} - ${moment(endTime, "HH:mm").format("hh:mm A")}`,
+      })
+      
       const { data } = await axios.post(import.meta.env.VITE_SPRING_URL + "/api/courses/add", {
         courses: [payload],
       }, {
@@ -65,9 +81,12 @@ export default function AddCoursesForm() {
     },
     onError: (error) => {
       console.log(error)
+      removeCourse(crn)
+      toast.error("Something went wrong")
     },
     onSuccess: (data) => {
       console.log(data)
+      toast.success("Course added successfully")
     }
   })
 

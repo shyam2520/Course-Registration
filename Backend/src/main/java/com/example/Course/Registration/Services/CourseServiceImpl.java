@@ -8,7 +8,7 @@ import java.util.Optional;
 import com.example.Course.Registration.models.Courses;
 import com.example.Course.Registration.repository.CourseRepository;
 // import com.example.Course.Registration.Repositorxy.CourseRepository;
-
+@Service
 public class CourseServiceImpl implements CourseService {
 
     private  CourseRepository courseRepository;
@@ -46,12 +46,6 @@ public class CourseServiceImpl implements CourseService {
         return courseRepository.findBySemester(semester);
     }
 
-    @Override
-    public Courses getCourseByPrerequisite(String prerequisite){
-        // return courseRepository.findByPrerequisite(prerequisite).get(0).orElse(null);
-        List<Courses> res = courseRepository.findByPrerequisite(prerequisite);
-        return !res.isEmpty() ?res.get(0):null;
-    }
 
     @Override
     public List<Courses> getCourseByInstructor(String instructor){

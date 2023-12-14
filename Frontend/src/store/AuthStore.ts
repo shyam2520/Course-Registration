@@ -3,6 +3,7 @@ import { User } from "@/types/user";
 import { createStore, useStore } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { getReset } from "./CoureseStore";
+import { getAllCourseReset } from "./AllCourseStore";
 
 export interface authStoreType {
   token: string;
@@ -12,6 +13,7 @@ export interface authStoreType {
 }
 
 const resetCourse = getReset();
+const resetAllCourse = getAllCourseReset();
 
 const authStore = createStore<authStoreType>()(
   persist(
@@ -31,6 +33,7 @@ const authStore = createStore<authStoreType>()(
       },
       signOut: () => {
         resetCourse();
+        resetAllCourse();
         set(() => ({
           token: '',
           user: {

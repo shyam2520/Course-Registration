@@ -6,7 +6,7 @@ import { useMutation } from "react-query";
 import { courseTable } from "@/types/courseTable";
 import { CourseRequestType } from "@/lib/validators/coursrequest";
 import { useToken } from "@/store/AuthStore";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { getIncrementEnrolled, getRemoveCourse } from "@/store/CoureseStore";
 import { getDecrementAllEnrolled, getIncrementAllEnrolled } from "@/store/AllCourseStore";
 import AddCoursesForm from "../AddCoursesForm";
@@ -40,6 +40,7 @@ export default function DataTable<TData, TValue>({
     state: {
       rowSelection
     },
+    initialState: { pagination: { pageSize: 10 } },
   })
 
   const {mutate: registerCourse} = useMutation({
@@ -58,12 +59,11 @@ export default function DataTable<TData, TValue>({
       })
       return data
     },
-    onError: (error) => {
+    onError: (error: AxiosError) => {
       console.log(error)
-      if(Object.keys(rowSelection).length === 1)
-        toast.error("Error registering course")
-      else
-        toast.error("Error registering courses")
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      //@ts-expect-error
+      toast.error(error.response?.data.message)
     },
     onSuccess: (data) => { 
       console.log(data)
@@ -79,6 +79,7 @@ export default function DataTable<TData, TValue>({
         const course: courseTable = row.original as courseTable
         return course.crn
       }))
+      setRowSelection({})
     }
   })
 
@@ -101,19 +102,32 @@ export default function DataTable<TData, TValue>({
     onError: (error) => {
       console.log(error)
       if(Object.keys(rowSelection).length === 1)
-        toast.error("Error dropping course")
+        if (from === "adminDashboard")
+          toast.error("Error deleting course")
+        else
+          toast.error("Error dropping course")
       else
-        toast.error("Error deleting courses")
+        if (from === "adminDashboard")
+          toast.error("Error deleting courses")
+        else
+          toast.error("Error deleting courses")
     },
     onSuccess: (data) => { 
       console.log(data)
       if(Object.keys(rowSelection).length === 1)
-        toast.success("Course dropped successfully")
+        if (from === "adminDashboard")
+          toast.success("Course deleted successfully")
+        else
+          toast.success("Course dropped successfully")
       else
-        toast.success("Courses dropped successfully")
+        if (from === "adminDashboard")
+          toast.success("Courses deleted successfully")
+        else
+          toast.success("Courses dropped successfully")
       table.getFilteredSelectedRowModel().rows.forEach((row) => {
         const course: courseTable = row.original as courseTable
         removeCourse(course.crn)
+
       })
       { from === "adminDashboard" &&
         decrementEnrolled(table.getFilteredSelectedRowModel().rows.map((row) => {
@@ -121,6 +135,7 @@ export default function DataTable<TData, TValue>({
           return course.crn
         }))
       }
+      setRowSelection({})
     }
   })
 

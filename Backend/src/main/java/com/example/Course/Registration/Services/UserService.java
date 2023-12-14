@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import com.example.Course.Registration.models.User;
 import com.example.Course.Registration.repository.UserRepository;
-@Service
+
 public interface UserService {
 
     boolean existsByEmail(String email);
