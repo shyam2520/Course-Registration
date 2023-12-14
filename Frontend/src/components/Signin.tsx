@@ -41,7 +41,7 @@ export default function Signin() {
     },
     onSuccess: (data) => {
       console.log(data);
-      const role = data.roles[0] == "ROLE_ADMIN" ? Role.ADMIN : Role.USER;
+      const role = data.roles == "ROLE_ADMIN" ? Role.ADMIN : Role.USER;
       signin({ token: data.accessToken, user: { id: data.id , name: data.name, email: data.email, role: role}});
       toast.success("Signed in successfully");
       navigate("/", { replace: true });

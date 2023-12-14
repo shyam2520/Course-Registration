@@ -12,6 +12,11 @@ public class ClassTiming {
         this.day = day;
     }
 
+    @Override
+    public String toString() {
+        return startTime + "-" + endTime + "-" + day;
+    }
+
     public String getStartTime() {
         return startTime;
     }

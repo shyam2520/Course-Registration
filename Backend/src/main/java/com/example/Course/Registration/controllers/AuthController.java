@@ -1,10 +1,8 @@
 package com.example.Course.Registration.controllers;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import com.example.Course.Registration.Util.Util;
 import com.example.Course.Registration.payload.response.AbstractResponseFactory;
 import com.example.Course.Registration.payload.response.JwtResponseFactory;
 import com.example.Course.Registration.payload.response.MessageResponseFactory;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -50,9 +47,9 @@ public class AuthController {
 
     JwtUtils jwtUtils;
 
-	AbstractResponseFactory messageFactory = new MessageResponseFactory();
+	AbstractResponseFactory MessageResponseFactory = new MessageResponseFactory();
 
-	AbstractResponseFactory jwtFactory = new JwtResponseFactory();
+	AbstractResponseFactory JwtResponseFactory = new JwtResponseFactory();
 	@Autowired
 	public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils) {
 		this.authenticationManager = authenticationManager;
@@ -72,11 +69,8 @@ public class AuthController {
 		String jwt = jwtUtils.generateJwtToken(authentication);
 		
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-		List<String> roles = userDetails.getAuthorities().stream()
-				.map(GrantedAuthority::getAuthority)
-				.toList();
-
-		return ResponseEntity.ok(jwtFactory.getResponse(Util.makeCSVString(List.of(jwt, userDetails.getId(), userDetails.getFullName(),userDetails.getUsername(), roles.get(0)))));
+		
+		return ResponseEntity.ok(JwtResponseFactory.getResponse(jwt+","+userDetails.toString()));
 	}
 
 	@PostMapping("/signup")
@@ -91,7 +85,7 @@ public class AuthController {
 		if (userRepository.existsByEmail(signUpRequest.getEmail())) {
 			return ResponseEntity
 					.badRequest()
-					.body(messageFactory.getResponse("Error: Email is already in use!"));
+					.body(MessageResponseFactory.getResponse("Error: Email is already in use!"));
 		}
 
 		// Create new user's account
@@ -144,7 +138,7 @@ public class AuthController {
 		}
 		userRepository.save(user);
 
-		return ResponseEntity.ok(messageFactory.getResponse("User registered successfully!"));
+		return ResponseEntity.ok(MessageResponseFactory.getResponse("User registered successfully!"));
 	}
 
 	

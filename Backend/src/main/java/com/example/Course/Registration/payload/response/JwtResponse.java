@@ -8,9 +8,9 @@ public class JwtResponse extends AbstractResponse {
 	private String id;
 	private String name;
 	private String email;
-	private List<String> roles;
+	private String roles;
 
-	public JwtResponse(String accessToken, String id, String name, String email, List<String> roles,List<String> courses) {
+	public JwtResponse(String accessToken, String id, String name, String email, String roles) {
 		super();
 		this.token = accessToken;
 		this.id = id;
@@ -26,7 +26,7 @@ public class JwtResponse extends AbstractResponse {
 		this.id = parts[1];
 		this.name = parts[2];
 		this.email = parts[3];
-		this.roles = List.of(parts[4]);
+		this.roles = parts[4];
 	}
 
 	public String getAccessToken() {
@@ -69,12 +69,11 @@ public class JwtResponse extends AbstractResponse {
 		this.name = username;
 	}
 
-	public List<String> getRoles() {
+	public String getRoles() {
 		return roles;
 	}
 
-	public void setRole(List<String> roles) {
+	public void setRoles(String roles) {
 		this.roles = roles;
 	}
-	
 }

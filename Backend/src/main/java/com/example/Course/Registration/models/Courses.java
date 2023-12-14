@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Set;
 
 @Document(collection = "Courses")
-public class Courses {
+public class Courses implements Comparable<Courses> {
     @Id
     private String id;
     private String title;
@@ -31,6 +31,16 @@ public class Courses {
         this.classTiming = classTiming;
     }
 
+    @Override
+    public String toString() {
+        return id+","+title+","+CRN+","+semester+","+hours+","+enrollment+","+instructor+","+seats+","+classTiming.toString();
+    }
+
+    @Override
+    public int compareTo(Courses o) {
+        return this.CRN.compareTo(o.CRN);
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -44,8 +54,6 @@ public class Courses {
         this.classTiming = classTiming;
     }
 
-    
-    
     
     public void setSemester(String semester) {
         this.semester = semester;
