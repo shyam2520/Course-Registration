@@ -1,4 +1,6 @@
 package com.example.Course.Registration.payload.response;
+import com.example.Course.Registration.models.ClassTiming;
+
 import java.util.Set;
 
 public class CourseResponse extends AbstractResponse {
@@ -8,20 +10,20 @@ public class CourseResponse extends AbstractResponse {
     private String semester;
     private Integer hours;
     private String enrollment;
-    private Set<String> prerequisite; 
     private String instructor;
     private Integer seats;
+    private ClassTiming classTiming;
 
-    public CourseResponse(String id, String title, Integer CRN, String semester, Integer hours, String enrollment, Set<String> prerequisite, String instructor, Integer seats) {
+    public CourseResponse(String id, String title, Integer CRN, String semester, Integer hours, String enrollment, String instructor, Integer seats, ClassTiming classTiming) {
         this.id = id;
         this.title = title;
         this.CRN = CRN;
         this.semester = semester;
         this.hours = hours;
         this.enrollment = enrollment;
-        this.prerequisite = prerequisite;
         this.instructor = instructor;
         this.seats = seats;
+        this.classTiming = classTiming;
     }
 
     public CourseResponse(String message) {
@@ -33,9 +35,10 @@ public class CourseResponse extends AbstractResponse {
         this.semester = tokens[3];
         this.hours = Integer.parseInt(tokens[4]);
         this.enrollment = tokens[5];
-        this.prerequisite = Set.of(tokens[6].split(";"));
-        this.instructor = tokens[7];
-        this.seats = Integer.parseInt(tokens[8]);
+        this.instructor = tokens[6];
+        this.seats = Integer.parseInt(tokens[7]);
+        String[] classTimingTokens = tokens[8].split("-");
+        this.classTiming = new ClassTiming(classTimingTokens[0], classTimingTokens[1], classTimingTokens[2]);
     }
 
     public void setTitle(String title) {
@@ -56,10 +59,6 @@ public class CourseResponse extends AbstractResponse {
 
     public void setEnrollment(String enrollment) {
         this.enrollment = enrollment;
-    }
-
-    public void setPrerequisite(Set<String> prerequisite) {
-        this.prerequisite = prerequisite;
     }
 
     public void setInstructor(String instructor) {
@@ -90,10 +89,6 @@ public class CourseResponse extends AbstractResponse {
         return enrollment;
     }
 
-    public Set<String> getPrerequisite() {
-        return prerequisite;
-    }
-
     public String getInstructor() {
         return instructor;
     }
@@ -110,4 +105,11 @@ public class CourseResponse extends AbstractResponse {
         this.id = id;
     }
 
+    public ClassTiming getClassTiming() {
+        return classTiming;
+    }
+
+    public void setClassTiming(ClassTiming classTiming) {
+        this.classTiming = classTiming;
+    }
 }

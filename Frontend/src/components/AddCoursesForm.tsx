@@ -29,7 +29,7 @@ export default function AddCoursesForm() {
       title: "",
       semester: "",
       hours: 4,
-      crn: Math.floor(Math.random() * 100000),
+      crn: Math.floor(Math.random() * 10000),
       enrollment: 0,
       seats: 100,
       instructor: "",
@@ -172,7 +172,7 @@ export default function AddCoursesForm() {
                   <FormItem>
                     <FormLabel>Instructor</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="Daniel Peters" {...field} />
                     </FormControl>
                   </FormItem>
                 )}
@@ -219,6 +219,8 @@ export default function AddCoursesForm() {
                         <SelectItem value="Wednesday">Wednesday</SelectItem>
                         <SelectItem value="Thursday">Thursday</SelectItem>
                         <SelectItem value="Friday">Friday</SelectItem>
+                        <SelectItem value="Saturday">Saturday</SelectItem>
+                        <SelectItem value="Sunday">Sunday</SelectItem>
                       </SelectContent>
                     </Select>
                   </FormItem>

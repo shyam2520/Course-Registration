@@ -50,6 +50,11 @@ public class UserDetailsImpl implements UserDetails {
 	}
 
 	@Override
+	public String toString() {
+		return id+","+username+","+fullName+","+authorities.stream().map(GrantedAuthority::getAuthority).collect(Collectors.joining(","));
+	}
+
+	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
 		return authorities;
 	}
